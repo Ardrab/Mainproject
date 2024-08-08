@@ -1,0 +1,137 @@
+{% load socialaccount %}
+{% providers_media_js %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script type="text/javascript" >
+        function preventBack(){window.history.forward();}
+         setTimeout("preventBack()", 0);
+         window.onunload=function(){null};
+     </script>
+    
+    <style>
+        body {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(to right, #7104e5 50%, #7104e5  50%);
+        }
+        .login-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+        }
+        .left-container {
+            background-image: url('{% static "assets/images/blog/blog_01.jpg" %}');
+            background-size: cover;
+            background-position: center;
+            width: 50%;
+            border-radius: 10px 0 0 10px;
+        }
+        .right-container {
+            padding: 2rem;
+            width: 50%;
+        }
+        .login-container h2 {
+            margin-bottom: 1.5rem;
+            color: #333;
+        }
+        .form-control {
+            border-radius: 20px;
+            margin-bottom: 15px;
+        }
+        .btn-primary {
+            background-color: #6a11cb;
+            border-color: #6a11cb;
+            border-radius: 20px;
+            width: 100%; /* Make the button take the full width */
+        }
+        .btn-primary:hover {
+            background-color: #fc25b4;
+            border-color: #2575fc;
+        }
+        .btn-google {
+            background-color: #db4437;
+            border-color: #db4437;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-google:hover {
+            background-color: #c23321;
+            border-color: #c23321;
+        }
+        .btn-google img {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+        }
+        .additional-links {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .button-center {
+            display: flex;
+            justify-content: center; /* Center the button horizontally */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="login-container">
+                    <div class="left-container"></div>
+                    <div class="right-container">
+                        <h2 class="text-center">Login</h2>
+                        {% if error %}
+                            <div class="alert alert-danger">{{ error }}</div>
+                        {% endif %}
+                        <form action="{% url 'login' %}" method="post">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="email">Email address</label>
+                                <input type="email" class="form-control" id="email" name="email" placeholder="Enter email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="password">Password</label>
+                                <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
+                            </div>
+                            <div class="additional-links">
+                                <a href="{% url 'password_reset_request' %}">Forgot Password?</a>
+
+                            </div>
+                            <div class="button-center">
+                                <button type="submit" class="btn btn-primary">Login</button>
+                            </div>
+                        </form>
+                        <button class="btn btn-google btn-block mt-3">
+                            <a href="{% provider_login_url 'google' %}" class="login-link google">
+                            <img src="{% static 'images/blog/blog_05.jpeg' %}" alt="Google Logo">
+                            Sign in with Google
+                        </button>
+                        <div class="mt-3 text-center">
+                            <p>Don't have an account? <a href="{% url 'register' %}">Register here</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

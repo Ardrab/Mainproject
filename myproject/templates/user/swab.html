@@ -1,0 +1,284 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title> Free Dental Medical Hospital Website Template | Smarteyeapps.com</title>
+    <link rel="shortcut icon" href="{% static 'assets/images/fav.jpg' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/fontawsom-all.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/plugins/slider/css/owl.carousel.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/plugins/slider/css/owl.theme.default.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/style.css' %}" />
+
+    <script type="text/javascript">
+        function preventBack() { window.history.forward(); }
+        setTimeout("preventBack()", 0);
+        window.onunload = function () { null };
+    </script>
+    <style>
+        /* Header Styling */
+        .btn-info {
+            position: absolute;
+            left: 70px;
+            top: 20px;
+            background-color: #3366ff;
+        }
+
+        .login-btn {
+            position: absolute;
+            right: 30px;
+            top: 0px;
+            background-color: #3366ff;
+        }
+
+        .move-left {
+            position: absolute;
+            left: -150px;
+        }
+
+        .ml-2 {
+            position: absolute;
+            left: 100px;
+        }
+
+        .btn-info.dropdown-toggle {
+            background-color: #3366ff;
+            color: white;
+            border-color: #3366ff;
+            margin-left: -50px;
+            margin-bottom: -1000px;
+            margin-top: -40px;
+        }
+
+        .dropdown-menu {
+            min-width: 120px;
+            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+            right: auto !important;
+            left: 0 !important;
+        }
+
+        .dropdown-menu a {
+            color: #333;
+        }
+
+        .dropdown-menu a:hover {
+            background-color: #f1f1f1;
+        }
+
+        .dropdown-divider {
+            margin: 0.5rem 0;
+        }
+
+        .dropdown-toggle1 {
+            margin-left: -350px;
+            margin-top: 30px;
+        }
+
+        .container.mt-5 {
+            padding-top: 100px;
+        }
+
+        .table {
+            background-color: #ffffff;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .table th {
+            background-color: #3366ff;
+            color: #ffffff;
+            text-align: center;
+        }
+
+        .table td {
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .table-actions .btn {
+            margin: 0 5px;
+        }
+
+        .btn-warning {
+            background-color: #ffc107;
+            border-color: #ffc107;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+
+        .form-section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            background-color: #f8f9fa;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+        }
+
+        .form-check-label {
+            margin-bottom: 0.5rem;
+        }
+
+        h4 {
+            background-color: #007bff;
+            color: white;
+            padding: 0.5rem;
+            border-radius: 0.5rem 0.5rem 0 0;
+            margin-top: -1.5rem;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div id="nav-head" class="header-nav">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-2 col-md-3 no-padding col-sm-12 nav-img">
+                        <h1 style="margin-top: 20px;">MEDLAB</h1>
+                        <a data-toggle="collapse" data-target="#menu" href="#menu">
+                            <i class="fas d-block d-md-none small-menu fa-bars"></i>
+                        </a>
+                    </div>
+
+                    <!-- Navigation Menu -->
+                    <div id="menu" class="col-lg-7 col-md-8 d-none d-md-block nav-item">
+                        <ul>
+                            <li><a href="{% url 'index' %}">Home</a></li>
+                            <li><a href="#about">About Us</a></li>
+                            <li><a href="#services">Services</a></li>
+                            <li><a href="#gallery">Gallery</a></li>
+                            <li><a href="#contact">Contact Us</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Book Appointment Button -->
+                    <div class="col-md-1">
+                        <div class="btn btn-info">
+                            <a href="{% url 'medicalhistory' %}" class="text-white">Book Appointment</a>
+                        </div>
+                    </div>
+
+                    <!-- User Dropdown -->
+                    <div class="col-md-2 d-flex justify-content-end align-items-center">
+                        <div class="dropdown">
+                            <button class="btn btn-info dropdown-toggle" type="button" id="userDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Welcome, {{ user.first_name }}
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="userDropdown">
+                                <a class="dropdown-item" href="#">Profile</a>
+                                <a class="dropdown-item" href="#">Settings</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dropdown">
+                        <div id="testDropdown" class="dropdown-toggle1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <h6>Select Test</h6>
+                        </div>
+                        <div class="dropdown-menu" aria-labelledby="testDropdown">
+                            <a class="dropdown-item" href="{% url 'blood' %}">Blood Test</a>
+                            <a class="dropdown-item" href="{% url 'swab' %}">Swab Test</a>
+                            <a class="dropdown-item" href="{% url 'urine' %}">Urine Test</a>
+                            <a class="dropdown-item" href="#">X-ray</a>
+                            <a class="dropdown-item" href="#">MRI</a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </header>
+    <div class="container mt-5">
+        <h2 class="mb-4 text-center">Swab Test Form</h2>
+        <form>
+            <div class="form-section">
+                <h4>Throat Swab</h4>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="throatSwabCulture">
+                    <label class="form-check-label" for="throatSwabCulture">Culture</label>
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="throatSwabPCR">
+                    <label class="form-check-label" for="throatSwabPCR">PCR</label>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h4>Nasal Swab</h4>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="nasalSwabCulture">
+                    <label class="form-check-label" for="nasalSwabCulture">Culture</label>
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="nasalSwabPCR">
+                    <label class="form-check-label" for="nasalSwabPCR">PCR</label>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h4>Rectal Swab</h4>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="rectalSwabCulture">
+                    <label class="form-check-label" for="rectalSwabCulture">Culture</label>
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="rectalSwabPCR">
+                    <label class="form-check-label" for="rectalSwabPCR">PCR</label>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h4>Vaginal Swab</h4>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="vaginalSwabCulture">
+                    <label class="form-check-label" for="vaginalSwabCulture">Culture</label>
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="vaginalSwabPCR">
+                    <label class="form-check-label" for="vaginalSwabPCR">PCR</label>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h4>Wound Swab</h4>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="woundSwabCulture">
+                    <label class="form-check-label" for="woundSwabCulture">Culture</label>
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="woundSwabPCR">
+                    <label class="form-check-label" for="woundSwabPCR">PCR</label>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary mt-4">Submit</button>
+        </form>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="{% static 'assets/js/jquery-3.2.1.min.js' %}"></script>
+    <script src="{% static 'assets/js/popper.min.js' %}"></script>
+    <script src="{% static 'assets/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'assets/plugins/slider/js/owl.carousel.min.js' %}"></script>
+    <script src="{% static 'assets/plugins/scroll-fixed/jquery-scrolltofixed-min.js' %}"></script>
+    <script src="{% static 'assets/js/script.js' %}"></script>
+</body>
+
+</html>
