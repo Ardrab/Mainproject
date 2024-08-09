@@ -153,74 +153,54 @@
         </div>
     </header>
 
-    <!DOCTYPE html>
+    <!-- Registration Form -->
+    <br><br><br><br><div class="container mt-5">
+        
+        <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Add your CSS and JavaScript files here -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Details</title>
+    <link rel="stylesheet" href="{% static 'assets/css/bootstrap.min.css' %}">
 </head>
 <body>
+
+<div class="container mt-5">
     <div class="container mt-5">
-        <h2 class="text-center mb-4">Add Test Type</h2>
-        <form method="post" action="{% url 'add_test_type' %}">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="test_id">Test Type Names</label>
-                <select id="test_id" name="test_id" class="form-control" onchange="updateTests()">
-                    <option value="">Select Test Type</option>
-                    {% for test in tests %}
-                        <option value="{{ test.test_id }}">{{ test.test_type_names }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="tests_names">Test Names</label>
-                <div id="test_names_container">
-                    <!-- Test names will be dynamically added here -->
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="normal_range">Normal Range</label>
-                <input type="text" id="normal_range" name="normal_range" class="form-control" required>
-            </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
-        </form>
+        <h2 class="text-center mb-4">All Bookings</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Booking ID</th>
+                    <th>User</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Status</th>
+                    <th>Test</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for booking in bookings %}
+                <tr>
+                    <td>{{ booking.id }}</td>
+                    <td>{{ booking.user }}</td>
+                    <td>{{ booking.appointment_date }}</td>
+                    <td>{{ booking.appointment_time }}</td>
+                    <td>{{ booking.status }}</td>
+                    <td>{{ booking.test }}</td>
+                    <td><a href="{% url 'booking_list_view' %}" class="btn btn-primary">View</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
-
-    <script>
-        function updateTests() {
-            const testId = document.getElementById('test_id').value;
-            const testNamesContainer = document.getElementById('test_names_container');
-            testNamesContainer.innerHTML = ''; // Clear existing test names
-
-            if (testId) {
-                fetch(`/get_tests_by_type/${testId}/`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.tests && data.tests.length > 0) {
-                            data.tests.forEach(test => {
-                                const checkbox = document.createElement('div');
-                                checkbox.classList.add('form-check');
-                                checkbox.innerHTML = `
-                                    <input type="checkbox" class="form-check-input" id="${test.tests_names.replace(/\s+/g, '')}" name="tests_names" value="${test.tests_names}">
-                                    <label class="form-check-label" for="${test.tests_names.replace(/\s+/g, '')}">${test.tests_names}</label>
-                                `;
-                                testNamesContainer.appendChild(checkbox);
-                            });
-                        } else {
-                            testNamesContainer.innerHTML = '<p>No tests available for the selected type.</p>';
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error fetching test names:', error);
-                        testNamesContainer.innerHTML = '<p>Error fetching test names.</p>';
-                    });
-            }
-        }
-    </script>
+<script src="{% static 'assets/js/jquery-3.2.1.min.js' %}"></script>
+<script src="{% static 'assets/js/bootstrap.min.js' %}"></script>
 </body>
 </html>
 
-        
     <script src="{% static 'assets/js/jquery-3.2.1.min.js' %}"></script>
     <script src="{% static 'assets/js/popper.min.js' %}"></script>
     <script src="{% static 'assets/js/bootstrap.min.js' %}"></script>
@@ -296,3 +276,4 @@
 </body>
 
 </html>
+

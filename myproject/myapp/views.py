@@ -516,23 +516,41 @@ def addtestname_view(request):
 from django.shortcuts import render, redirect
 from .models import Tests, TestType
 
-def add_test_type_view(request):
+# myapp/views.py
+
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .models import TestType, Tests
+
+
+
+   # myapp/views.py
+
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .models import TestType, Tests
+
+def add_test_types(request):
     if request.method == 'POST':
         test_id = request.POST.get('test_id')
         tests_names = request.POST.get('tests_names')
         normal_range = request.POST.get('normal_range')
-        
-        # Assuming validation is done here
-        test_type = TestType(
-            test_id_id=test_id,
-            tests_names=tests_names,
-            normal_range=normal_range
-        )
-        test_type.save()
-        return redirect('labindex')  # Replace 'success_url' with the actual URL name
-    
-    tests = Tests.objects.all()
-    return render(request, 'lab/add_test_type.html', {'tests': tests})
+
+        if test_id and tests_names and normal_range:
+            try:
+                test = Tests.objects.get(test_id=test_id)
+                test_type = TestType(test_id=test, tests_names=tests_names, normal_range=normal_range)
+                test_type.save()
+                messages.success(request, 'Test type added successfully')
+                return redirect('labindex')  # Adjust this redirect URL as needed
+            except Tests.DoesNotExist:
+                messages.error(request, 'Selected test does not exist.')
+        else:
+            messages.error(request, 'All fields are required.')
+
+    test_names = Tests.objects.all()
+    return render(request, 'lab/addtesttypes.html', {'test_names': test_names})
+
 
 from django.shortcuts import render, redirect
 from django.contrib.auth.tokens import default_token_generator
@@ -723,3 +741,16 @@ def add_test_type(request):
         # For GET requests, render the form
         test_names = TestName.objects.all()
         return render(request, 'user/add_test_type.html', {'test_names': test_names})
+from django.shortcuts import render, get_object_or_404
+from .models import Booking
+from .forms import BookingForm
+
+
+
+from django.shortcuts import render, get_object_or_404
+from .models import Booking, TestType
+
+def booking_list_view(request):
+    bookings = Booking.objects.all()
+    return render(request, 'lab/booking_detail.html', {'bookings': bookings})
+

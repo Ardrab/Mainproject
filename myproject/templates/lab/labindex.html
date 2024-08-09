@@ -16,7 +16,7 @@
     <style>
         .btn-info {
             position: absolute;
-            left: -70px;
+            left: -10px;
             top: 20px;
             background-color: #3366ff;
         }
@@ -42,9 +42,9 @@
             background-color: #3366ff;
             color: white;
             border-color: #3366ff;
-            margin-left: -50px;
+            margin-left: -70px;
             margin-bottom: -1000px;
-            margin-top: -40px;
+            margin-top: -50px;
         }
 
         .dropdown-menu {
@@ -67,10 +67,14 @@
         }
         .dropdown-toggle1{
             margin-left: -350px;
-            margin-top: 30px;
+            margin-top: 50px;
         }
     </style>
-
+<script type="text/javascript" >
+    function preventBack(){window.history.forward();}
+     setTimeout("preventBack()", 0);
+     window.onunload=function(){null};
+</script>
 </head>
 
 <body>
@@ -91,10 +95,10 @@
                     <div id="menu" class="col-lg-7 col-md-8 d-none d-md-block nav-item">
                         <ul>
                             <li><a href="{% url 'index' %}">Home</a></li>
-                            <li><a href="#about">About Us</a></li>
-                            <li><a href="{% url 'add_test_type' %}">Add test types</a></li>
+                            <li><a href="{% url 'addtesttypes' %}">Add test types</a></li>
                             <li><a href="{% url 'addtestname' %}">Add Tests</a></li>
                             <li><a href="{% url 'addtest' %}">Add test</a></li>
+                            <li><a href="{% url 'booking_list_view' %}">Appointments</a></li>
                         </ul>
                     </div>
 

@@ -25,7 +25,7 @@ urlpatterns = [
     path('lab/addtest/', views.addtest_view, name='addtest'),
     path('lab/addtestname/', views.addtestname_view, name='addtestname'),
     path('password-reset/', views.password_reset_request, name='password_reset_request'),
-    path('add-test-type/', views.add_test_type_view, name='add_test_type'),
+    path('lab/addtesttypes/', views.add_test_types, name='addtesttypes'),
 
     # URL for password reset done page
     path('password-reset/done/', views.password_reset_done, name='password_reset_done'),
@@ -41,6 +41,7 @@ urlpatterns = [
     path('get_test_types_by_name/<int:name_id>/', views.get_test_types_by_name, name='get_test_types_by_name'),
     path('get_tests_by_type/<int:test_id>/', views.get_tests_by_type, name='get_tests_by_type'),
     path('add_test_type/submit/', views.add_test_type, name='add_test_type'),
+    path('bookings/', views.booking_list_view, name='booking_list_view'),
 ]
 
      

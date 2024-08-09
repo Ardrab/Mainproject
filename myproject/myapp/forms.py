@@ -41,3 +41,16 @@ class LabTechnicianForm(forms.ModelForm):
         model = LabTechnician
         fields = ['specialization']
     # myapp/forms.py
+from django import forms
+from .models import Booking
+
+class BookingForm(forms.ModelForm):
+    class Meta:
+        model = Booking
+        fields = ['user', 'appointment_date', 'appointment_time', 'status', 'test']
+        widgets = {
+            'appointment_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'appointment_time': forms.TimeInput(attrs={'class': 'form-control', 'type': 'time'}),
+            'status': forms.Select(attrs={'class': 'form-control'}),
+            'test': forms.Select(attrs={'class': 'form-control'}),
+        }
