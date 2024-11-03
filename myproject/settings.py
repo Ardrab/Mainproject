@@ -157,8 +157,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'APP': {
-            'client_id': '107956468944-gf2b647d7sv7bo4edecvkhn64j5m3phl.apps.googleusercontent.com',
-            'secret': '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',
+            'client_id': '',
+            'secret': '',
             'key': ''
         },
         # Optional settings (can be omitted if not required)
