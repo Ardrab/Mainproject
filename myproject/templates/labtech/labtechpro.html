@@ -1,0 +1,145 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Lab Technician Profile | MEDLAB</title>
+    <link rel="stylesheet" href="{% static 'assets/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/fontawsom-all.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/plugins/slider/css/owl.carousel.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/plugins/slider/css/owl.theme.default.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/style.css' %}" />
+    <style>
+        .btn-info {
+            position: absolute;
+            left: -70px;
+            top: 20px;
+            background-color: #3366ff;
+        }
+
+        .login-btn {
+            position: absolute;
+            right: 30px;
+            top: 0px;
+            background-color: #3366ff;
+        }
+
+        .move-left {
+            position: absolute;
+            left: -150px;
+        }
+
+        .ml-2 {
+            position: absolute;
+            left: 100px;
+        }
+
+        .btn-info.dropdown-toggle {
+            background-color: #3366ff;
+            color: white;
+            border-color: #3366ff;
+            margin-left: -50px;
+            margin-bottom: -1000px;
+            margin-top: -40px;
+        }
+
+        .dropdown-menu {
+            min-width: 120px;
+            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+            right: auto !important;
+            left: 0 !important;
+        }
+
+        .dropdown-menu a {
+            color: #333;
+        }
+
+        .dropdown-menu a:hover {
+            background-color: #f1f1f1;
+        }
+
+        .dropdown-divider {
+            margin: 0.5rem 0;
+        }
+        .dropdown-toggle1{
+            margin-left: -350px;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ################# Header Starts Here ####################### -->
+    <header>
+        <div id="nav-head" class="header-nav">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-2 col-md-3 no-padding col-sm-12 nav-img">
+                        <h1 style="margin-top: 20px;">MEDLAB</h1>
+                        <a data-toggle="collapse" data-target="#menu" href="#menu">
+                            <i class="fas d-block d-md-none small-menu fa-bars"></i>
+                        </a>
+                    </div>
+
+                    <!-- Navigation Menu -->
+                    <div id="menu" class="col-lg-7 col-md-8 d-none d-md-block nav-item">
+                        <ul>
+                            <li><a href="{% url 'labtechindex' %}">Home</a></li>
+                            <li><a href="#about">About Us</a></li>
+                            <li><a href="#services">Services</a></li>
+                            <li><a href="#gallery">Gallery</a></li>
+                            <li><a href="#contact">Contact Us</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- User Dropdown -->
+                    <div class="col-md-2 d-flex justify-content-end align-items-center">
+                        <div class="dropdown">
+                            <button class="btn btn-info dropdown-toggle" type="button" id="userDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Welcome, {{ user.email }}
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="userDropdown">
+                                <a class="dropdown-item" href="{% url 'profile' %}">Profile</a>
+                                <a class="dropdown-item" href="#">Settings</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- ################# Header Ends Here ####################### -->
+
+   <br><br><br><br> <div class="container mt-5">
+        <h2 class="text-center">Lab Technician Profile</h2>
+        <div class="card p-4">
+            <div class="card-body">
+                <h5 class="card-title">User: {{ lab_technician.user.username }}</h5>
+                <p class="card-text"><strong>Email:</strong> {{ lab_technician.user.email }}</p>
+                <p class="card-text"><strong>Specialization:</strong> {{ lab_technician.specialization }}</p>
+                <p class="card-text"><strong>Profile Completed:</strong> {{ lab_technician.profile_completed|yesno:"Yes,No" }}</p>
+                <p class="card-text"><strong>Date of Birth:</strong> {{ lab_technician.user.dob|date:"Y-m-d" }}</p>
+                <p class="card-text"><strong>Gender:</strong> {{ lab_technician.user.gender }}</p>
+                <p class="card-text"><strong>Phone:</strong> {{ lab_technician.user.phone }}</p>
+                
+                {% if lab_technician.certificate %}
+                    <p class="card-text"><strong>Certificate:</strong> <a href="{{ lab_technician.certificate.url }}" target="_blank">View Certificate</a></p>
+                {% else %}
+                    <p class="card-text"><strong>Certificate:</strong> Not uploaded</p>
+                {% endif %}
+                
+                <a href="{% url 'labtechprofile' %}" class="btn btn-primary mt-3">Edit Profile</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'assets/js/jquery-3.2.1.min.js' %}"></script>
+    <script src="{% static 'assets/js/bootstrap.min.js' %}"></script>
+</body>
+
+</html>

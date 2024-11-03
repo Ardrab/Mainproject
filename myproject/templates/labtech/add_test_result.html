@@ -1,0 +1,52 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Add Test Result</title>
+    <link rel="shortcut icon" href="{% static 'assets/images/fav.jpg' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/fontawesome-all.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/style.css' %}" />
+    <style>
+        .custom-form {
+            background-color: #f9f9f9; /* Light gray background */
+            border: 1px solid #e0e0e0; /* Light border */
+            border-radius: 10px; /* More rounded corners */
+            padding: 40px; /* Increased padding */
+            margin-top: 50px; /* Space from the top */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Slightly stronger shadow */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container mt-5 custom-form">
+        <h2>Add Test Result for Booking ID: {{ booking.id }}</h2>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="test_types">Select Test Types:</label>
+                <select name="test_types" id="test_types" class="form-control" multiple required>
+                    {% for test in test_types %}
+                        <option value="{{ test.testtype_id }}">{{ test.tests_names }}</option>
+                    {% empty %}
+                        <option value="">No test types available</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="result_value">Result Value:</label>
+                <input type="text" name="result_value" id="result_value" class="form-control" placeholder="Enter Result Value" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit Result</button>
+        </form>
+        <a href="{% url 'view_scheduled_requests' %}" class="btn btn-secondary mt-3">Back to Request</a>
+    </div>
+
+    <script src="{% static 'assets/js/jquery-3.2.1.min.js' %}"></script>
+    <script src="{% static 'assets/js/bootstrap.min.js' %}"></script>
+</body>
+</html>

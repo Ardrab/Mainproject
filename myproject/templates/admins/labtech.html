@@ -132,11 +132,8 @@
         <h1 class="text-center text-white">MEDLAB</h1>
         <a href="{% url 'adminindex' %}">Dashboard</a>
         <a href="{% url 'user_list' %}">Users</a>
-        
-        <a href="#">Lab Tests</a>
-        <a href="#">Patients</a>
         <a href="{% url 'labtech_list' %}">Lab Technicians</a>
-        <a href="#">Settings</a>
+        <a href="{% url 'addlab' %}">Add labs</a>
     </div>
 
     <!-- Main content -->
@@ -203,20 +200,22 @@
                             <th>Name</th>
                             <th>Phone Number</th>
                             <th>Email</th>
-                            
+                            <th>City</th>
                         </tr>
                     </thead>
                     <tbody>
+                        
                         {% for user in users %}
                         <tr>
                             <td>{{ user.first_name }} {{ user.last_name }}</td>
-                            <td>{{ user.phone }}</td>
+                            <td>{{ user.profiles.first.phone_no }}</td>
                             <td>{{ user.email }}</td>
-                            
+                            <td>{{ user.profiles.first.city }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
+                
             </div>
         </div>
     </div>

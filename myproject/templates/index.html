@@ -9,6 +9,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
+
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title> Free Dental Medical Hospital Website Template | Smarteyeapps.com</title>
     <link rel="shortcut icon" href="{% static 'assets/images/fav.jpg' %}">
@@ -18,9 +19,14 @@
 <link rel="stylesheet" href="{% static 'assets/plugins/slider/css/owl.theme.default.css' %}">
 <link rel="stylesheet" type="text/css" href="{% static 'assets/css/style.css' %}" />
 <script type="text/javascript" >
-    function preventBack(){window.history.forward();}
-     setTimeout("preventBack()", 0);
-     window.onunload=function(){null};
+    
+
+    // Prevent navigating back to the previous page
+    if (window.performance && window.performance.navigation.type === 2) {
+        window.location.href = '{% url "index" %}';  // Redirect to the homepage
+    }
+</script>
+
  </script>
 </script>
 <style>
@@ -47,7 +53,7 @@
             <div class="container">
                 <div class="row">
                     <div class="col-lg-2 col-md-3 no-padding col-sm-12 nav-img">
-                        <img src="{% static 'assets/images/logo.png' %}" alt="">
+                        <h1 style="margin-top: 20px;">MEDLAB</h1>
 
                        <a data-toggle="collapse" data-target="#menu" href="#menu" ><i class="fas d-block d-md-none small-menu fa-bars"></i></a>
                     </div>

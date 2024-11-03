@@ -12,95 +12,149 @@
     <link rel="stylesheet" href="{% static 'assets/plugins/slider/css/owl.carousel.min.css' %}">
     <link rel="stylesheet" href="{% static 'assets/plugins/slider/css/owl.theme.default.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/style.css' %}" />
+    <script type="text/javascript" >
+        function preventBack(){window.history.forward();}
+         setTimeout("preventBack()", 0);
+         window.onunload=function(){null};
+    </script>
+    <style>  .btn-info:hover {
+        background-color: #254abf;
+        border-color: #254abf;
+    }
 
-    <style>
-        .btn-info {
-            background-color: #3366ff;
-            border-color: #3366ff;
-            margin-left: -100px;
-            margin-top:30px
-        }
+    .dropdown-menu {
+        min-width: 120px;
+        box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+    }
 
-        .btn-info:hover {
-            background-color: #254abf;
-            border-color: #254abf;
-        }
+    .dropdown-menu a {
+        color: #333;
+    }
 
-        .dropdown-menu {
-            min-width: 120px;
-            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
-        }
+    .dropdown-menu a:hover {
+        background-color: #f1f1f1;
+    }
 
-        .dropdown-menu a {
-            color: #333;
-        }
+    .form-container {
+        max-width: 600px;
+        margin: auto;
+        padding: 30px;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    }
 
-        .dropdown-menu a:hover {
-            background-color: #f1f1f1;
-        }
+    .form-container h2 {
+        margin-bottom: 20px;
+        color: #333;
+    }
 
-        .form-container {
-            max-width: 600px;
-            margin: auto;
-            padding: 30px;
-            background-color: #f9f9f9;
-            border-radius: 8px;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-        }
+    .form-group label {
+        font-weight: bold;
+        color: #555;
+    }
 
-        .form-container h2 {
-            margin-bottom: 20px;
-            color: #333;
-        }
+    .form-group input {
+        border-radius: 4px;
+        border: 1px solid #ddd;
+        padding: 10px;
+    }
 
-        .form-group label {
-            font-weight: bold;
-            color: #555;
-        }
+    .form-group input:focus {
+        border-color: #3366ff;
+        box-shadow: 0 0 0 0.2rem rgba(51, 102, 255, 0.25);
+    }
 
-        .form-group input {
-            border-radius: 4px;
-            border: 1px solid #ddd;
-            padding: 10px;
-        }
+    .form-container .btn-primary {
+        background-color: #3366ff;
+        border-color: #3366ff;
+        width: 100%;
+        padding: 10px;
+    }
 
-        .form-group input:focus {
-            border-color: #3366ff;
-            box-shadow: 0 0 0 0.2rem rgba(51, 102, 255, 0.25);
-        }
+    .form-container .btn-primary:hover {
+        background-color: #254abf;
+        border-color: #254abf;
+    }
 
-        .form-container .btn-primary {
-            background-color: #3366ff;
-            border-color: #3366ff;
-            width: 100%;
-            padding: 10px;
-        }
+    .error {
+        color: red;
+        font-size: 0.9em;
+    }
 
-        .form-container .btn-primary:hover {
-            background-color: #254abf;
-            border-color: #254abf;
-        }
+    .button-center {
+        text-align: center;
+        margin-top: 20px;
+    }
 
-        .error {
-            color: red;
-            font-size: 0.9em;
-        }
+    .text-center a {
+        color: #3366ff;
+        text-decoration: none;
+    }
 
-        .button-center {
-            text-align: center;
-            margin-top: 20px;
-        }
+    .text-center a:hover {
+        color: #254abf;
+        text-decoration: underline;
+    }
+    .login-btn {
+        position: absolute;
+        right: 30px;
+        top: 0px;
+        background-color: #3366ff;
+    }
 
-        .text-center a {
-            color: #3366ff;
-            text-decoration: none;
-        }
+    .move-left {
+        position: absolute;
+        left: -150px;
+    }
 
-        .text-center a:hover {
-            color: #254abf;
-            text-decoration: underline;
-        }
-    </style>
+    .ml-2 {
+        position: absolute;
+        left: 100px;
+    }
+
+    .btn-info.dropdown-toggle {
+        background-color: #3366ff;
+        color: white;
+        border-color: #3366ff;
+        margin-right: -1000px;
+        margin-bottom: -20px;
+        margin-top: -40px;
+    }
+
+    .dropdown-menu {
+        min-width: 120px;
+        box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+        right: auto !important;
+        left: 0 !important;
+    }
+
+    .dropdown-menu a {
+        color: #333;
+    }
+
+    .dropdown-menu a:hover {
+        background-color: #f1f1f1;
+    }
+
+    .dropdown-divider {
+        margin: 0.5rem 0;
+    }
+    .dropdown-toggle1{
+        margin-left: -350px;
+        margin-top: 50px;
+    }
+    .li{
+        margin-left: -20px;
+    }
+    .btn-info {
+        position: absolute;
+        margin-left: 50px;
+        top: 20px;
+        background-color: #3366ff;
+    }
+</style>
+        
 </head>
 
 <body>
@@ -121,10 +175,10 @@
                     <div id="menu" class="col-lg-7 col-md-8 d-none d-md-block nav-item">
                         <ul>
                             <li><a href="{% url 'index' %}">Home</a></li>
-                            <li><a href="#about">About Us</a></li>
-                            <li><a href="#services">Services</a></li>
-                            <li><a href="#gallery">Gallery</a></li>
-                            <li><a href="#contact">Contact Us</a></li>
+                            <li><a href="{% url 'addtesttypes' %}">Add test types</a></li>
+                            <li><a href="{% url 'addtestname' %}">Add Tests</a></li>
+                            <li><a href="{% url 'booking_list_view' %}">Appointments</a></li>
+                            <li class="li"><a href="{% url 'addtest' %}">Add test</a></li>
                         </ul>
                     </div>
 
@@ -156,7 +210,7 @@
     <!-- Registration Form -->
     <br><br><br><br><div class="container mt-5">
         <div class="form-container">
-            <h2 class="text-center mb-4">Register Lab</h2>
+            <h2 class="text-center mb-4">Add LabTech</h2>
             <form id="registrationForm" method="POST" action="{% url 'addlabtech' %}">
                 {% csrf_token %}
                 <div class="form-group">

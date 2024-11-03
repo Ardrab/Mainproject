@@ -74,7 +74,7 @@ $(this).addClass("active");
 
             // If logout is true, redirect to index.html
             if (logout === 'true') {
-                window.location.href = '/';  // Redirect to the homepage
+                window.location.href = 'index';  // Redirect to the homepage
             }
         });
     }

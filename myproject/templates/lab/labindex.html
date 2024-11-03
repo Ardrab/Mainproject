@@ -16,8 +16,8 @@
     <style>
         .btn-info {
             position: absolute;
-            left: -10px;
-            top: 20px;
+            margin-left: -1000px;
+            top: 40px;
             background-color: #3366ff;
         }
 
@@ -42,9 +42,9 @@
             background-color: #3366ff;
             color: white;
             border-color: #3366ff;
-            margin-left: -70px;
+            margin-left: 70px;
             margin-bottom: -1000px;
-            margin-top: -50px;
+            margin-top: -70px;
         }
 
         .dropdown-menu {
@@ -69,6 +69,24 @@
             margin-left: -350px;
             margin-top: 50px;
         }
+        .li{
+            margin-left: -20px;
+        }
+        .logo{
+            margin-right:100px;
+        }
+        .h1{
+            margin-left: 100px;
+        }
+        .dropdown1 {
+            position: relative; /* Set position to relative for upward movement */
+            top: -10px; /* Move the dropdown item upwards */
+        }
+    
+        /* Optional: Adjust the dropdown menu position if needed */
+        .dropdown-menu {
+            margin-top: -10px; /* Adjust this value to align the dropdown menu */
+        }
     </style>
 <script type="text/javascript" >
     function preventBack(){window.history.forward();}
@@ -85,7 +103,7 @@
             <div class="container">
                 <div class="row">
                     <div class="col-lg-2 col-md-3 no-padding col-sm-12 nav-img">
-                        <h1 style="margin-top: 20px;">MEDLAB</h1>
+                        <h1 class="logo"style="margin-top: 20px;">MEDLAB</h1>
                         <a data-toggle="collapse" data-target="#menu" href="#menu">
                             <i class="fas d-block d-md-none small-menu fa-bars"></i>
                         </a>
@@ -94,30 +112,43 @@
                     <!-- Navigation Menu -->
                     <div id="menu" class="col-lg-7 col-md-8 d-none d-md-block nav-item">
                         <ul>
-                            <li><a href="{% url 'index' %}">Home</a></li>
-                            <li><a href="{% url 'addtesttypes' %}">Add test types</a></li>
-                            <li><a href="{% url 'addtestname' %}">Add Tests</a></li>
-                            <li><a href="{% url 'addtest' %}">Add test</a></li>
+                            <li><a href="{% url 'labindex' %}">Home</a></li>
+                          
                             <li><a href="{% url 'booking_list_view' %}">Appointments</a></li>
+                            <li class="nav-item dropdown1">
+                                <a class="nav-link dropdown-toggle" href="#" id="addDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Add Tests
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="addDropdown">
+                                    <a class="dropdown-item" href="{% url 'addtesttypes' %}">Add Test Types</a>
+                                    <a class="dropdown-item" href="{% url 'addtestname' %}">Add Testname</a>
+                                    <a class="dropdown-item" href="{% url 'addtest' %}">Add Test</a>
+                                </div>
+                            </li>
+                            <li class="nav-item dropdown1">
+                                <a class="nav-link dropdown-toggle" href="#" id="technicianDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Technicians
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="technicianDropdown">
+                                    <a class="dropdown-item" href="{% url 'addlabtech' %}">Add Technician</a>
+                                    <a class="dropdown-item" href="{% url 'unscheduled_lab_technicians' %}">Lab Technician Availability</a>
+                                </div>
+                            </li>
+                            
                         </ul>
                     </div>
 
-                  
-                    <div class="col-md-1">
-                        <div class="btn btn-info">
-                            <a href="{% url 'addlabtech' %}" class="text-white">Add labtechnician</a>
-                        </div>
-                    </div>
+                 
                     
 
                     <!-- User Dropdown -->
                     <div class="col-md-2 d-flex justify-content-end align-items-center">
                         <div class="dropdown">
                             <button class="btn btn-info dropdown-toggle" type="button" id="userDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Welcome, {{ user.email }}
+                                {{ user.email }}
                             </button>
                             <div class="dropdown-menu" aria-labelledby="userDropdown">
-                                <a class="dropdown-item" href="{% url 'profile' %}">Profile</a>
+                                <a class="dropdown-item" href="{% url 'labprofile' %}">Profile</a>
                                 <a class="dropdown-item" href="#">Settings</a>
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>

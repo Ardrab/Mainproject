@@ -54,3 +54,21 @@ class BookingForm(forms.ModelForm):
             'status': forms.Select(attrs={'class': 'form-control'}),
             'test': forms.Select(attrs={'class': 'form-control'}),
         }
+# myproject/myapp/forms.py
+
+from django import forms
+from .models import LabTechnician
+
+class LabTechnicianScheduleForm(forms.Form):
+    specialization = forms.ChoiceField(choices=[], required=True)
+    technician = forms.ChoiceField(choices=[], required=True)
+
+    def __init__(self, *args, **kwargs):
+        super(LabTechnicianScheduleForm, self).__init__(*args, **kwargs)
+        
+        # Populate specialization choices from LabTechnician model
+        specializations = LabTechnician.objects.values_list('specialization', flat=True).distinct()
+        self.fields['specialization'].choices = [(spec, spec) for spec in specializations]
+
+        # Initially, technician choices are empty
+        self.fields['technician'].choices = []

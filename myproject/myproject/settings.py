@@ -48,6 +48,8 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'django.contrib.sites',
+    'chatbot',
+    'healthcare_chatbot',
 ]
 SITE_ID=2
 MIDDLEWARE = [
@@ -192,3 +194,10 @@ EMAIL_HOST_USER = 'medlabs404@gmail.com'
 EMAIL_HOST_PASSWORD = 'huzo ehsw hlmt lyvj'
 
 USE_TZ = True
+# settings.py
+
+# Media files settings
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # Ensure this directory exists
+RAZORPAY_KEY_ID = 'rzp_test_ulk1JHPmrok29J'
+RAZORPAY_KEY_SECRET = 'HT1frOR0Er3mz0YsKqmrcR7c'

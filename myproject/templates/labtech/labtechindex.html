@@ -3,16 +3,17 @@
 <html lang="en">
 
 <head>
-
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Free Dental Medical Hospital Website Template | Smarteyeapps.com</title>
     <link rel="shortcut icon" href="{% static 'assets/images/fav.jpg' %}">
     <link rel="stylesheet" href="{% static 'assets/css/bootstrap.min.css' %}">
-    <link rel="stylesheet" href="{% static 'assets/css/fontawsom-all.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/fontawesome-all.min.css' %}">
     <link rel="stylesheet" href="{% static 'assets/plugins/slider/css/owl.carousel.min.css' %}">
     <link rel="stylesheet" href="{% static 'assets/plugins/slider/css/owl.theme.default.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/style.css' %}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
     <style>
         .btn-info {
             position: absolute;
@@ -69,17 +70,41 @@
             margin-left: -350px;
             margin-top: 30px;
         }
+        .notification-icon {
+            position: relative; /* Ensure the badge is positioned relative to the icon */
+            padding: 10px; /* Add some padding for better click area */
+            color: #3366ff; /* Icon color */
+            font-size: 1.5rem; /* Increase icon size */
+        }
+    
+        .notification-icon:hover {
+            background-color: #0056b3; /* Darker shade on hover */
+        }
+    
+        .notification-badge {
+            position: absolute; /* Position the badge absolutely */
+            top: -5px; /* Adjust the vertical position to move it upwards */
+            right: -10px; /* Adjust the horizontal position */
+            font-size: 0.75rem; /* Smaller font size for the badge */
+            padding: 0.25em 0.4em; /* Padding for the badge */
+            border-radius: 1rem; /* Fully rounded badge */
+            background-color: #dc3545; /* Red background for the badge */
+            color: white; /* White text color */
+            font-weight: bold; /* Bold text for better visibility */
+            display: flex; /* Center the text */
+            justify-content: center; /* Center the text horizontally */
+            align-items: center; /* Center the text vertically */
+        }
     </style>
+</head>
 <script type="text/javascript" >
     function preventBack(){window.history.forward();}
      setTimeout("preventBack()", 0);
      window.onunload=function(){null};
- </script>
-</head>
-
+</script>
 <body>
 
-    <!-- ################# Header Starts Here#######################--->
+    <!-- ################# Header Starts Here #######################--->
     <header>
         <div id="nav-head" class="header-nav">
             <div class="container">
@@ -94,37 +119,49 @@
                     <!-- Navigation Menu -->
                     <div id="menu" class="col-lg-7 col-md-8 d-none d-md-block nav-item">
                         <ul>
-                            <li><a href="{% url 'index' %}">Home</a></li>
-                            <li><a href="#about">About Us</a></li>
+                            <li><a href="{% url 'labtechindex' %}">Home</a></li>
+                            <li><a href="{% url 'view_scheduled_requests' %}">View Requests</a></li>
                             <li><a href="#services">Services</a></li>
                             <li><a href="#gallery">Gallery</a></li>
                             <li><a href="#contact">Contact Us</a></li>
                         </ul>
                     </div>
-                    
+
+                   <!-- Notification Icon -->
+<div class="col-md-1 d-flex justify-content-center align-items-center">
+    <a href="{% url 'view_notifications' %}" class="notification-icon position-relative">
+        <i class="fas fa-bell fa-lg"></i> <!-- Font Awesome bell icon -->
+        <span class="notification-badge position-absolute top-0 start-100 translate-middle bg-danger">
+            {{ unviewed_count }} <!-- Display the count of unread messages -->
+            
+        </span>
+    </a>
+</div>
+
 
                     <!-- User Dropdown -->
                     <div class="col-md-2 d-flex justify-content-end align-items-center">
                         <div class="dropdown">
                             <button class="btn btn-info dropdown-toggle" type="button" id="userDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Welcome, {{ user.email }}
+                               , {{ user.email }}
                             </button>
                             <div class="dropdown-menu" aria-labelledby="userDropdown">
                                 <a class="dropdown-item" href="{% url 'labtechprofile' %}">Profile</a>
-                                <a class="dropdown-item" href="#">Settings</a>
+                                <a class="dropdown-item" href="{% url 'labtech_profile' %}">View Profile</a>
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
                             </div>
                         </div>
                     </div>
-                    
-
                 </div>
             </div>
         </div>
     </header>
+    
 
-    <!-- ################# Slider Starts Here#######################--->
+
+
+    
     <div class="slider-detail">
         <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
             <ol class="carousel-indicators">
@@ -154,7 +191,6 @@
         </div>
     </div>
 
-    <!-- ################# Key Features Starts Here#######################--->
     <section class="key-features">
         <div class="row no-margin">
             <div class="col-lg-4 kvxol col-md-6">
@@ -195,7 +231,6 @@
         </div>
     </section>
 
-    <!-- ################# With Medical Starts Here#######################--->
     <section id="about" class="with-medical">
         <div class="container">
             <div class="row">
@@ -213,7 +248,6 @@
         </div>
     </section>
 
-    <!-- ################# Services Starts Here#######################--->
     <section id="services" class="our-services">
         <div class="container">
             <div class="inner-title">
@@ -246,7 +280,7 @@
         </div>
     </section>
 
-    <!-- ################# Our Team Starts Here#######################--->
+   
     <section id="team" class="our-team">
         <div class="container">
             <div class="inner-title">
@@ -278,7 +312,6 @@
         </div>
     </section>
 
-    <!-- ################# Footer Starts Here#######################--->
     <footer>
         <div class="container">
             <div class="row">
