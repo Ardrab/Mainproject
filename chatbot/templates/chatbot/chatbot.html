@@ -1,0 +1,84 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Health Prediction Chatbot</title>
+    <link rel="stylesheet" href="{% static 'assets/css/bootstrap.min.css' %}">
+    <style>
+        body {
+            background-color: #f8f9fa; /* Light background color */
+        }
+        .container {
+            margin-top: 50px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: white; /* White background for the container */
+            padding: 20px;
+        }
+        #chatbox {
+            border: 1px solid #ced4da; /* Border color */
+            border-radius: 5px;
+            background-color: #e9ecef; /* Light gray background for chatbox */
+        }
+        #messages {
+            max-height: 250px; /* Limit height of messages */
+            overflow-y: auto; /* Scroll if messages exceed height */
+        }
+        .btn-back {
+            margin-bottom: 20px; /* Space below the button */
+            background-color: #007bff; /* Bootstrap primary color */
+            color: white;
+        }
+        .btn-back:hover {
+            background-color: #0056b3; /* Darker shade on hover */
+        }
+    </style>
+    <script src="{% static 'assets/js/jquery-3.2.1.min.js' %}"></script>
+</head>
+<body>
+    <div class="container">
+        <button class="btn btn-back" onclick="window.location.href='{% url 'user_index' %}'">Back to Home</button>
+        <h2 class="text-center">Health Prediction Chatbot</h2>
+        <div id="chatbox" class="border p-3" style="height: 300px; overflow-y: scroll;">
+            <div id="messages"></div>
+        </div>
+        <input type="text" id="user_input" class="form-control mt-3" placeholder="Type your message here...">
+        <button id="send" class="btn btn-primary mt-2">Send</button>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $('#send').on('click', function() {
+                const userInput = $('#user_input').val();
+                $('#messages').append('<div><strong>You:</strong> ' + userInput + '</div>');
+                $('#user_input').val('');
+
+                $.ajax({
+                    type: 'POST',
+                    url: '{% url "chatbot_view" %}',  // Ensure you have the correct URL
+                    data: {
+                        'user_input': userInput,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    success: function(response) {
+                        $('#messages').append('<div><strong>Bot:</strong> ' + response.response + '</div>');
+                        $('#chatbox').scrollTop($('#chatbox')[0].scrollHeight); // Scroll to the bottom
+                    },
+                    error: function() {
+                        $('#messages').append('<div><strong>Bot:</strong> Error occurred.</div>');
+                    }
+                });
+            });
+
+            // Allow pressing Enter to send the message
+            $('#user_input').keypress(function(e) {
+                if (e.which === 13) {
+                    $('#send').click();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

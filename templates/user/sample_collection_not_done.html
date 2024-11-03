@@ -1,0 +1,180 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Free Dental Medical Hospital Website Template | Smarteyeapps.com</title>
+    <link rel="shortcut icon" href="{% static 'assets/images/fav.jpg' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/fontawsom-all.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/plugins/slider/css/owl.carousel.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/plugins/slider/css/owl.theme.default.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/style.css' %}" />
+    <script type="text/javascript" >
+        function preventBack(){window.history.forward();}
+         setTimeout("preventBack()", 0);
+         window.onunload=function(){null};
+    </script>
+    <style>
+        .btn-info {
+            position: absolute;
+            left: 70px;
+            top: 20px;
+            background-color: #3366ff;
+        }
+
+        .login-btn {
+            position: absolute;
+            right: 30px;
+            top: 0px;
+            background-color: #3366ff;
+        }
+
+        .move-left {
+            position: absolute;
+            left: -150px;
+        }
+
+        .ml-2 {
+            position: absolute;
+            left: 100px;
+        }
+
+        .btn-info.dropdown-toggle {
+            background-color: #3366ff;
+            color: white;
+            border-color: #3366ff;
+            margin-left: -50px;
+            margin-bottom: -1000px;
+            margin-top: -40px;
+        }
+
+        .dropdown-menu {
+            min-width: 120px;
+            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+            right: auto !important;
+            left: 0 !important;
+        }
+
+        .dropdown-menu a {
+            color: #333;
+        }
+
+        .dropdown-menu a:hover {
+            background-color: #f1f1f1;
+        }
+
+        .dropdown-divider {
+            margin: 0.5rem 0;
+        }
+        .dropdown-toggle1{
+            margin-left: -350px;
+            margin-top: 30px;
+        }
+        .chatbot-icon {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #3366ff;
+            color: white;
+            border-radius: 50%;
+            padding: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            z-index: 1000; /* Ensure it appears above other elements */
+        }
+
+        .chatbot-icon:hover {
+            background-color: #0056b3; /* Darker shade on hover */
+        }
+    </style>
+
+</head>
+<script type="text/javascript" >
+    function preventBack(){window.history.forward();}
+     setTimeout("preventBack()", 0);
+     window.onunload=function(){null};
+</script>
+<body>
+
+    <!-- ################# Header Starts Here#######################--->
+    <header>
+        <div id="nav-head" class="header-nav">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-2 col-md-3 no-padding col-sm-12 nav-img">
+                        <h1 style="margin-top: 20px;">MEDLAB</h1>
+                        <a data-toggle="collapse" data-target="#menu" href="#menu">
+                            <i class="fas d-block d-md-none small-menu fa-bars"></i>
+                        </a>
+                    </div>
+
+                    <!-- Navigation Menu -->
+                    <div id="menu" class="col-lg-7 col-md-8 d-none d-md-block nav-item">
+                        <ul>
+                            <li><a href="{% url 'user_index' %}">Home</a></li>
+                            <li><a href="{% url 'user_bookings' %}">Booking Details</a></li>
+                            <!-- Update the navigation menu in your existing template -->
+
+                            <li><a href="#gallery">Gallery</a></li>
+                            
+                        </ul>
+                    </div>
+
+                    
+                    
+
+                    <!-- User Dropdown -->
+                    <div class="col-md-2 d-flex justify-content-end align-items-center">
+                        <div class="dropdown">
+                            <button class="btn btn-info dropdown-toggle" type="button" id="userDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Welcome, {{ user.first_name }}
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="userDropdown">
+                                <a class="dropdown-item" href="{% url 'profile' %}">Profile</a>
+                                <a class="dropdown-item" href="#">Settings</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dropdown">
+                        <div id="testDropdown" class="dropdown-toggle1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <h6>Select Test</h6>
+                        </div>
+                        <div class="dropdown-menu" aria-labelledby="testDropdown">
+                            <a class="dropdown-item" href="{% url 'add_test_type' %}">Blood Test</a>
+                            <a class="dropdown-item" href="{% url 'swab' %}">Swab Test</a>
+                            <a class="dropdown-item" href="{% url 'urine' %}">Urine Test</a>
+                            <a class="dropdown-item" href="#">X-ray</a>
+                            <a class="dropdown-item" href="#">MRI</a>
+                        </div>
+                    </div>
+                    
+
+                </div>
+            </div>
+        </div>
+        <div class="chatbot-icon" onclick="openChatbot()">
+            <i class="fas fa-comments"></i> <!-- Font Awesome chat icon -->
+        </div>
+    
+        <script>
+            function openChatbot() {
+                // Logic to open the chatbot interface
+                // This could be a modal or redirect to the chatbot page
+                window.location.href = "{% url 'chatbot_view' %}"; // Redirect to the chatbot view
+            }
+        </script>
+    </header>
+    <br><br><br><br><br><div class="container mt-5">
+        <h2>Sample Collection Not Done</h2>
+        <p>Unfortunately, the sample collection for Booking ID: {{ booking.id }} has not been completed yet.</p>
+        <p>Please check back later or contact support for more information.</p>
+        <a href="{% url 'user_bookings' %}"class="btn btn-secondary mt-3">Back to Requests</a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedLab - Bill</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            color: #333;
+        }
+        .header {
+            text-align: center;
+            padding: 10px;
+            border-bottom: 2px solid #007BFF;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            margin: 0;
+            color: #007BFF;
+        }
+        .header p {
+            font-size: 14px;
+            color: #555;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #007BFF;
+            color: white;
+        }
+        .total {
+            font-weight: bold;
+            background-color: #f2f2f2;
+        }
+        .amount {
+            width: 100%;
+            text-align: center;
+        }
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            color: #777;
+            padding-top: 10px;
+            border-top: 2px solid #007BFF;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Lab Name and Header -->
+    <div class="header">
+        <h1>MedLab</h1>
+        <p>Your trusted medical diagnostic partner</p>
+        <p>123 Health Street, City, Country | Phone: +123-456-7890</p>
+    </div>
+
+    <!-- Booking and Payment Information -->
+    <h2>Bill for Booking</h2>
+    <p><strong>Booking ID:</strong> {{ booking.id }}</p>
+    <p><strong>Appointment Date:</strong> {{ booking.appointment_date }}</p>
+    <p><strong>Appointment Time:</strong> {{ booking.appointment_time }}</p>
+    <p><strong>Patient Name:</strong> {{ booking.user.get_full_name }}</p>
+
+    <!-- Test Types and Amount Table -->
+    <table class="amount">
+        <thead>
+            <tr>
+                <th>Test Type</th>
+                <th>Amount (₹)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for detail in test_details %}
+            <tr>
+                <td>{{ detail.test_type.tests_names }}</td>
+                <td>{{ detail.amount|floatformat:2 }}</td>
+            </tr>
+            {% endfor %}
+            <tr class="total">
+                <td>Total</td>
+                <td>{{ total_amount|floatformat:2 }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Payment Details -->
+    <p><strong>Payment Status:</strong> {{ payment.status }}</p>
+    <p><strong>Payment Date:</strong> {{ payment.payment_date }}</p>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>Thank you for choosing MedLab. We wish you good health!</p>
+        <p>&copy; {{ current_year }} MedLab. All Rights Reserved.</p>
+    </div>
+
+</body>
+</html>

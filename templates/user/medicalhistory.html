@@ -1,0 +1,211 @@
+{%load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free Dental Medical Hospital Website Template | Smarteyeapps.com</title>
+    <link rel="shortcut icon" href="{% static 'assets/images/fav.jpg' %}">
+<link rel="stylesheet" href="{% static 'assets/css/bootstrap.min.css' %}">
+<link rel="stylesheet" href="{% static 'assets/css/fontawsom-all.min.css' %}">
+<link rel="stylesheet" href="{% static 'assets/plugins/slider/css/owl.carousel.min.css' %}">
+<link rel="stylesheet" href="{% static 'assets/plugins/slider/css/owl.theme.default.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'assets/css/style.css' %}" />
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script type="text/javascript" >
+        function preventBack(){window.history.forward();}
+         setTimeout("preventBack()", 0);
+         window.onunload=function(){null};
+    </script>
+
+    <style>
+        .btn-info {
+            position: absolute;
+            left: -50px;
+            top: 20px;
+            background-color: #3366ff;
+        }
+
+        .login-btn {
+            position: absolute;
+            right: 30px;
+            top: 0px;
+            background-color: #3366ff;
+        }
+
+        .move-left {
+            position: absolute;
+            left: -150px;
+        }
+
+        .ml-2 {
+            position: absolute;
+            left: 100px
+        }
+
+        .btn-info.dropdown-toggle {
+            background-color: #3366ff;
+            color: white;
+            border-color: #3366ff;
+            margin-left: -100px;
+            margin-bottom: -1000px;
+            margin-top: -40px;
+        }
+
+        .dropdown-menu {
+            min-width: 120px;
+            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+            right: auto !important;
+            left: 0 !important;
+        }
+
+        .dropdown-menu a {
+            color: #333;
+        }
+
+        .dropdown-menu a:hover {
+            background-color: #f1f1f1;
+        }
+
+        .dropdown-divider {
+            margin: 0.5rem 0;
+        }
+
+        .mt-5 {
+            margin-top: -2000px;
+            padding-top: 100px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div id="nav-head" class="header-nav">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-2 col-md-3 no-padding col-sm-12 nav-img">
+                        <h1 style="margin-top: 20px;">MEDLAB</h1>
+                        <a data-toggle="collapse" data-target="#menu" href="#menu">
+                            <i class="fas d-block d-md-none small-menu fa-bars"></i>
+                        </a>
+                    </div>
+                    <div id="menu" class="col-lg-7 col-md-8 d-none d-md-block nav-item">
+                        <ul>
+                            <li><a href="{% url 'index' %}">Home</a></li>
+                            <li><a href="#about">About Us</a></li>
+                            <li><a href="#services">Services</a></li>
+                            <li><a href="#gallery">Gallery</a></li>
+                            <li><a href="#contact">Contact Us</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-md-1">
+                        <a href="{% url 'medicalhistory' %}" class="btn btn-info">Book Appointment</a>
+                    </div>
+                    <div class="col-md-2 d-flex justify-content-end align-items-center">
+                        <div class="dropdown">
+                            <button class="btn btn-info dropdown-toggle" type="button" id="userDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Welcome, {{ user.first_name }}
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="userDropdown">
+                                <a class="dropdown-item" href="#">Profile</a>
+                                <a class="dropdown-item" href="#">Settings</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container mt-5">
+        <h2 class="text-center">Pre-Laboratory Test Questionnaire</h2>
+        <form>
+            <!-- Medical History -->
+            <div class="form-group">
+                <label for="medicalConditions">Do you have any existing medical conditions?</label>
+                <textarea class="form-control" id="medicalConditions" rows="3" placeholder="Describe any existing medical conditions"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="recentIllnesses">Have you had any recent illnesses or surgeries?</label>
+                <textarea class="form-control" id="recentIllnesses" rows="3" placeholder="Describe any recent illnesses or surgeries"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="medications">Are you currently taking any medications, including over-the-counter drugs and supplements?</label>
+                <textarea class="form-control" id="medications" rows="3" placeholder="List all current medications"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="allergies">Do you have any known allergies, especially to medications or latex?</label>
+                <textarea class="form-control" id="allergies" rows="3" placeholder="List any known allergies"></textarea>
+            </div>
+
+            <!-- Symptoms and Concerns -->
+            <div class="form-group">
+                <label for="symptoms">What symptoms are you currently experiencing?</label>
+                <textarea class="form-control" id="symptoms" rows="3" placeholder="Describe your symptoms"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="symptomDuration">How long have you had these symptoms?</label>
+                <input type="text" class="form-control" id="symptomDuration" placeholder="Duration of symptoms">
+            </div>
+            <div class="form-group">
+                <label for="symptomChanges">Have you noticed any changes in your symptoms over time?</label>
+                <textarea class="form-control" id="symptomChanges" rows="3" placeholder="Describe any changes in symptoms"></textarea>
+            </div>
+
+            <!-- Family History -->
+            <div class="form-group">
+                <label for="familyHistory">Do you have a family history of certain diseases (e.g., diabetes, heart disease, cancer)?</label>
+                <textarea class="form-control" id="familyHistory" rows="3" placeholder="Describe family history of diseases"></textarea>
+            </div>
+
+            <!-- Lifestyle and Habits -->
+            <div class="form-group">
+                <label>Do you smoke or use tobacco products?</label><br>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="tobaccoUse" id="tobaccoYes" value="Yes">
+                    <label class="form-check-label" for="tobaccoYes">Yes</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="tobaccoUse" id="tobaccoNo" value="No">
+                    <label class="form-check-label" for="tobaccoNo">No</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Do you consume alcohol?</label><br>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="alcoholUse" id="alcoholYes" value="Yes">
+                    <label class="form-check-label" for="alcoholYes">Yes</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="alcoholUse" id="alcoholNo" value="No">
+                    <label class="form-check-label" for="alcoholNo">No</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Do you use recreational drugs?</label><br>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="drugUse" id="drugYes" value="Yes">
+                    <label class="form-check-label" for="drugYes">Yes</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="drugUse" id="drugNo" value="No">
+                    <label class="form-check-label" for="drugNo">No</label>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+</body>
+<script src="{% static 'assets/js/jquery-3.2.1.min.js' %}"></script>
+    <script src="{% static 'assets/js/popper.min.js' %}"></script>
+    <script src="{% static 'assets/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'assets/plugins/scroll-fixed/jquery-scrolltofixed-min.js' %}"></script>
+    <script src="{% static 'assets/js/script.js' %}"></script>
+</html>

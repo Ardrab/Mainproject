@@ -1,0 +1,305 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Admin Dashboard | MEDLAB</title>
+    <link rel="shortcut icon" href="{% static 'assets/images/fav.jpg' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/fontawsom-all.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/plugins/slider/css/owl.carousel.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/plugins/slider/css/owl.theme.default.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/style.css' %}" />
+
+    <style>
+        .btn-info {
+            position: absolute;
+            left: -70px;
+            top: 20px;
+            background-color: #3366ff;
+        }
+
+        .login-btn {
+            position: absolute;
+            right: 30px;
+            top: 0px;
+            background-color: #3366ff;
+        }
+
+        .move-left {
+            position: absolute;
+            left: -150px;
+        }
+
+        .ml-2 {
+            position: absolute;
+            left: 100px;
+        }
+
+        .btn-info.dropdown-toggle {
+            background-color: #3366ff;
+            color: white;
+            border-color: #3366ff;
+            margin-left: -50px;
+            margin-bottom: -1000px;
+            margin-top: -40px;
+        }
+
+        .dropdown-menu {
+            min-width: 120px;
+            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+            right: auto !important;
+            left: 0 !important;
+        }
+
+        .dropdown-menu a {
+            color: #333;
+        }
+
+        .dropdown-menu a:hover {
+            background-color: #f1f1f1;
+        }
+
+        .dropdown-divider {
+            margin: 0.5rem 0;
+        }
+
+        .dropdown-toggle1 {
+            margin-left: -350px;
+            margin-top: 30px;
+        }
+
+        .form-container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-container h2 {
+            margin-bottom: 20px;
+        }
+
+        .form-container .form-group label {
+            font-weight: bold;
+        }
+
+        .form-container .btn-primary {
+            width: 100%;
+            background-color: #3366ff;
+            border-color: #3366ff;
+        }
+
+        .form-container .btn-primary:hover {
+            background-color: #254abf;
+            border-color: #254abf;
+        }
+
+        .form-container .error {
+            color: red;
+            font-size: 0.9em;
+        }
+
+        .form-container .button-center {
+            text-align: center;
+        }
+
+        .form-container .text-center a {
+            color: #3366ff;
+        }
+
+        .form-container .text-center a:hover {
+            color: #254abf;
+            text-decoration: underline;
+        }
+        .mt-5{
+            padding-top:100px;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <!-- ################# Header Starts Here #######################--->
+    <header>
+        <div id="nav-head" class="header-nav">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-2 col-md-3 no-padding col-sm-12 nav-img">
+                        <h1 style="margin-top: 20px;">MEDLAB</h1>
+                        <a data-toggle="collapse" data-target="#menu" href="#menu">
+                            <i class="fas d-block d-md-none small-menu fa-bars"></i>
+                        </a>
+                    </div>
+
+                    <!-- Navigation Menu -->
+                    <div id="menu" class="col-lg-7 col-md-8 d-none d-md-block nav-item">
+                        <ul>
+                            <li><a href="{% url 'index' %}">Home</a></li>
+                            <li><a href="{% url 'addtesttypes' %}">Add test types</a></li>
+                            <li><a href="{% url 'addtestname' %}">Add Tests</a></li>
+                            <li><a href="{% url 'booking_list_view' %}">Appointments</a></li>
+                            <li class="li"><a href="{% url 'addtest' %}">Add test</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="col-md-1">
+                        <div class="btn btn-info">
+                            <a href="{% url 'addlabtech' %}" class="text-white">Add lab technician</a>
+                        </div>
+                    </div>
+
+                    <!-- User Dropdown -->
+                    <div class="col-md-2 d-flex justify-content-end align-items-center">
+                        <div class="dropdown">
+                            <button class="btn btn-info dropdown-toggle" type="button" id="userDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Welcome, {{ user.email }}
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="userDropdown">
+                                <a class="dropdown-item" href="{% url 'profile' %}">Profile</a>
+                                <a class="dropdown-item" href="#">Settings</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </header>
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Add User Information</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.4.6/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    </head>
+    <body>
+        <div class="container mt-5">
+            <h2 class="mb-4">Add User Information</h2>
+            <form method="post" action="{% url 'labprofile' %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="license_number">License Number</label>
+                    <input type="text" class="form-control" id="license_number" name="license_number" required>
+                    <small id="license_number_error" class="form-text text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label for="city">City</label>
+                    <input type="text" class="form-control" id="city" name="city" required>
+                    <small id="city_error" class="form-text text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="text" class="form-control" id="phone" name="phone" required>
+                    <small id="phone_error" class="form-text text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" class="form-control" id="password" name="password" required>
+                    <small id="password_error" class="form-text text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label for="confirm_password">Confirm Password</label>
+                    <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                    <small id="confirm_password_error" class="form-text text-danger"></small>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>   
+    </body>
+    </html>
+    
+   
+           
+            
+    <script src="{% static 'assets/js/jquery-3.2.1.min.js' %}"></script>
+    <script src="{% static 'assets/js/popper.min.js' %}"></script>
+    <script src="{% static 'assets/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'assets/plugins/slider/js/owl.carousel.min.js' %}"></script>
+    <script src="{% static 'assets/plugins/scroll-fixed/jquery-scrolltofixed-min.js' %}"></script>
+    <script src="{% static 'assets/js/script.js' %}"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function () {
+    // License Number Validation
+    $('#license_number').on('input', function () {
+        var licenseNumber = $(this).val();
+        var licenseNumberRegex = /^L[a-zA-Z0-9]+$/;
+        if (!licenseNumberRegex.test(licenseNumber)) {
+            $('#license_number_error').text('License number must start with "L" and contain letters and numbers.');
+        } else {
+            $('#license_number_error').text('');
+        }
+    });
+
+    // City Validation
+    $('#city').on('input', function () {
+        var city = $(this).val();
+        var cityRegex = /^[a-zA-Z]+$/;
+        if (!cityRegex.test(city)) {
+            $('#city_error').text('City should contain only alphabets.');
+        } else {
+            $('#city_error').text('');
+        }
+    });
+
+    // Phone Number Validation
+    $('#phone').on('input', function () {
+        var phone = $(this).val();
+        var phoneRegex = /^[6-9]+$/;
+        if (!phoneRegex.test(phone)) {
+            $('#phone_error').text('Phone number should contain only numbers.');
+        } else {
+            $('#phone_error').text('');
+        }
+    });
+
+    // Password Validation
+    $('#password').on('input', function () {
+        var password = $(this).val();
+        var passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Z][a-zA-Z\d!@#$%^&*]{7,}$/;
+        if (!passwordRegex.test(password)) {
+            $('#password_error').text('Password must contain at least 1 uppercase letter, 1 number, 1 special character, and be at least 8 characters long.');
+        } else {
+            $('#password_error').text('');
+        }
+    });
+
+    // Confirm Password Validation
+    $('#confirm_password').on('input', function () {
+        var confirmPassword = $(this).val();
+        var password = $('#password').val();
+        if (confirmPassword !== password) {
+            $('#confirm_password_error').text('Passwords do not match.');
+        } else {
+            $('#confirm_password_error').text('');
+        }
+    });
+
+    // Form Submission Validation
+    $('#userForm').on('submit', function (event) {
+        var isValid = true;
+        // Check if there are any errors displayed
+        if ($('#license_number_error').text() || $('#city_error').text() || $('#phone_error').text() || $('#password_error').text() || $('#confirm_password_error').text()) {
+            isValid = false;
+        }
+
+        if (!isValid) {
+            event.preventDefault(); // Prevent form submission if there are errors
+        }
+    });
+});
+</script>
+
+</body>
+
+</html>

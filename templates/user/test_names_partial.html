@@ -1,0 +1,8 @@
+{% for test in test_types %}
+    <div class="form-check">
+        <input class="form-check-input" type="checkbox" name="test_names" value="{{ test.pk }}" id="test_{{ test.pk }}">
+        <label class="form-check-label" for="test_{{ test.pk }}">
+            {{ test.tests_names }}
+        </label>
+    </div>
+{% endfor %}
