@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-1ttcjj65r-h$%l=)xru!k*ssh@x=y%x^@+t-jfu-+fzh&+u85t
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['medlab-v11i.onrender.com','localhost','127.0.0.1']
 
 # settings.py
 
