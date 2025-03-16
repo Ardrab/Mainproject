@@ -1209,6 +1209,52 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
 from .models import LabTechnicianSchedule, CollectionStatus, LabTechnician, Booking, Notification
 
+# @never_cache
+# @login_required
+# def view_scheduled_requests(request):
+#     technician = get_object_or_404(LabTechnician, user=request.user)
+#     scheduled_requests = LabTechnicianSchedule.objects.filter(technician=technician)
+
+#     detailed_requests = []
+#     for schedule in scheduled_requests:
+#         booking = schedule.booking
+#         test_types = booking.test_types.all()
+
+#         test_type_names = ", ".join([test_type.tests_names for test_type in test_types]) if test_types else "No test types available"
+
+#         # Get or create the collection status
+#         collection_status, created = CollectionStatus.objects.get_or_create(booking=booking)
+
+#         # Determine type of booking and fetch location if it's home collection
+#         if booking.home_collection and booking.home_collection.location:
+#             type_of_booking = 'Home Collection'
+#             location = booking.home_collection.location  # Fetch location from home_collection table
+#         else:
+#             type_of_booking = 'Lab Visit'
+#             location = None  # No location for Lab Visit
+
+#         detailed_requests.append({
+#             'appointment_date': booking.appointment_date,
+#             'appointment_time': booking.appointment_time,
+#             'user_name': f"{booking.user.first_name} {booking.user.last_name}",
+#             'test_types': test_type_names,
+#             'booking_id': booking.id,
+#             'is_collected': collection_status.is_collected,  # Collection status
+#             'technician_id': collection_status.technician.labtech_id if collection_status.technician else None,
+#             'type_of_booking': type_of_booking,  # Booking type
+#             'location': location,  # Store location for home collection
+#         })
+
+#     # Calculate the count of unread notifications for the current lab technician
+#     unviewed_count = Notification.objects.filter(is_read=False, lab_technician=technician).count()
+
+#     return render(request, 'labtech/view_scheduled_request.html', {
+#         'scheduled_requests': detailed_requests,
+#         'unviewed_count': unviewed_count,
+#     })
+
+ # Redirect back to the scheduled requests view  # Ensure you have the correct imports
+# myproject/myapp/views.py
 @never_cache
 @login_required
 def view_scheduled_requests(request):
@@ -1239,6 +1285,7 @@ def view_scheduled_requests(request):
             'user_name': f"{booking.user.first_name} {booking.user.last_name}",
             'test_types': test_type_names,
             'booking_id': booking.id,
+            'status': booking.status,  # Include status here
             'is_collected': collection_status.is_collected,  # Collection status
             'technician_id': collection_status.technician.labtech_id if collection_status.technician else None,
             'type_of_booking': type_of_booking,  # Booking type
@@ -1253,8 +1300,6 @@ def view_scheduled_requests(request):
         'unviewed_count': unviewed_count,
     })
 
- # Redirect back to the scheduled requests view  # Ensure you have the correct imports
-# myproject/myapp/views.py
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import LabTechnicianSchedule, CollectionStatus, LabTechnician
 from django.views.decorators.cache import never_cache
