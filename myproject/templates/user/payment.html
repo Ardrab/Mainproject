@@ -14,29 +14,21 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             text-align: center;
         }
-
         .payment-form h4 {
             font-size: 1.5rem;
             margin-bottom: 10px;
             font-weight: bold;
             color: #333;
         }
-
         .payment-form p {
             color: #666;
             font-size: 1rem;
             margin-bottom: 20px;
         }
-
         .payment-form img {
             width: 100px;
             margin-bottom: 15px;
         }
-
-        .payment-form input[type="hidden"] {
-            display: none;
-        }
-
         .payment-form .razorpay-payment-button {
             background-color: #F37254;
             color: #fff;
@@ -48,34 +40,14 @@
             font-weight: bold;
             transition: background-color 0.3s ease;
         }
-
         .payment-form .razorpay-payment-button:hover {
             background-color: #e15840;
-        }
-
-        .payment-form .form-group {
-            margin-bottom: 15px;
-        }
-
-        .payment-form input[readonly] {
-            background-color: #f9f9f9;
-            border: 1px solid #ccc;
-            padding: 10px;
-            border-radius: 5px;
-            width: 100%;
-        }
-
-        .payment-form label {
-            font-weight: bold;
-            margin-bottom: 5px;
-            display: block;
-            color: #333;
         }
     </style>
 </head>
 <body>
 
-<form action="{% url 'process_payment' booking.id %}" method="POST" class="payment-form">
+<form action="{% url 'process_payment' booking.id %}" method="POST" class="payment-form" id="payment-form">
     {% csrf_token %}
     <h4>Complete Your Payment</h4>
     <p>Please review your details and proceed with payment.</p>
@@ -96,26 +68,48 @@
         <input type="text" id="amount" name="amount" value="{{ total_amount|floatformat:2 }}" readonly>
     </div>
     
-    <script
-        src="https://checkout.razorpay.com/v1/checkout.js"
-        data-key="{{ razorpay_key }}"  # Razorpay public key
-        data-amount="{{ total_amount|floatformat:2|add:'0.01'|floatformat:0 }}"  # Amount in paisa
-        data-currency="INR"
-        data-order_id="{{ razorpay_order_id }}"  # Razorpay order ID
-        data-buttontext="Pay Now"
-        data-name="Your Company Name"
-        data-description="Test Transaction"
-        data-image="https://example.com/your_logo.jpg"
-        data-prefill.name="{{ request.user.first_name }} {{ request.user.last_name }}"
-        data-prefill.email="{{ request.user.email }}"
-        data-theme.color="#F37254"
-    ></script>
     <input type="hidden" name="razorpay_payment_id" id="razorpay_payment_id">
     <input type="hidden" name="razorpay_order_id" id="razorpay_order_id">
     <input type="hidden" name="razorpay_signature" id="razorpay_signature">
     
-    <button type="submit" class="razorpay-payment-button">Pay Now</button>
+    <button type="button" id="rzp-button" class="razorpay-payment-button">Pay Now</button>
 </form>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    document.getElementById('rzp-button').onclick = function(e) {
+        e.preventDefault();
+
+        var options = {
+            "key": "{{ razorpay_key }}",  // Razorpay public key
+            "amount": "{{ total_amount|floatformat:2|add:'0.01'|floatformat:0 }}",  // Amount in paisa
+            "currency": "INR",
+            "name": "Your Company Name",
+            "description": "Test Transaction",
+            "image": "https://example.com/your_logo.jpg",
+            "order_id": "{{ razorpay_order_id }}",  // Razorpay order ID
+            "handler": function (response){
+                // Populate hidden fields with payment details
+                document.getElementById('razorpay_payment_id').value = response.razorpay_payment_id;
+                document.getElementById('razorpay_order_id').value = response.razorpay_order_id;
+                document.getElementById('razorpay_signature').value = response.razorpay_signature;
+                
+                // Submit the form
+                document.getElementById('payment-form').submit();
+            },
+            "prefill": {
+                "name": "{{ request.user.first_name }} {{ request.user.last_name }}",
+                "email": "{{ request.user.email }}"
+            },
+            "theme": {
+                "color": "#F37254"
+            }
+        };
+
+        var rzp1 = new Razorpay(options);
+        rzp1.open();
+    }
+</script>
 
 </body>
 </html>

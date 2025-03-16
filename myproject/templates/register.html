@@ -19,31 +19,32 @@
         }
         .registration-container {
             background: white;
-            margin-top: 500px;
-            margin-bottom:500px;
-            padding: 2rem;
+            padding: 3rem;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            display: flex;
-            width: 150%;
-            margin-left:-100px;
+            width: 100%;
             max-width: 900px;
             border-radius: 10px;
+            display: flex;
+            flex-wrap: wrap;
         }
         .left-container {
             background-image: url('{% static "assets/images/blog/blog_01.jpg" %}');
             background-size: cover;
             background-position: center;
-            width: 50%;
-            border-radius: 10px 0 0 10px;
+            width: 100%;
+            height: 200px;
+            border-radius: 10px 10px 0 0;
+            margin-bottom: 1rem;
         }
         .right-container {
             padding: 2rem;
-            width: 50%;
+            width: 100%;
         }
         .registration-container h2 {
             margin-bottom: 1.5rem;
             color: #333;
             text-align: center;
+            font-size: 2rem;
         }
         .form-control {
             border-radius: 20px;
@@ -55,6 +56,7 @@
             border-color: #6a11cb;
             border-radius: 20px;
             width: 100%;
+            font-size: 1.1rem;
         }
         .btn-primary:hover {
             background-color: #fc25b4;
@@ -71,14 +73,40 @@
         }
         .form-group-split {
             display: flex;
+            flex-wrap: wrap;
             justify-content: space-between;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
         .form-group-split .form-group {
             width: 48%;
         }
+        .form-group-split .form-group:last-child {
+            margin-bottom: 0;
+        }
         .mt-3 {
             margin-top: 1rem;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        #video {
+            width: 100%;
+            border: 1px solid #ccc;
+            margin-bottom: 10px;
+            border-radius: 10px;
+        }
+        #capture {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            background-color: #6a11cb;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #capture:hover {
+            background-color: #fc25b4;
         }
     </style>
 </head>
@@ -93,15 +121,14 @@
                         <form action="{% url 'register' %}" method="post" id="registrationForm">
                             {% csrf_token %}
                             <input type="hidden" name="role" value="0">
+                            
+                            <!-- First Name and Last Name fields -->
                             <div class="form-group-split">
-                                <!-- First Name field -->
                                 <div class="form-group">
                                     <label for="fname">First Name</label>
                                     <input type="text" class="form-control" id="fname" name="fname" placeholder="Enter first name" required>
                                     <span class="error" id="fnameError">*First name should contain only alphabets</span>
                                 </div>
-
-                                <!-- Last Name field -->
                                 <div class="form-group">
                                     <label for="lname">Last Name</label>
                                     <input type="text" class="form-control" id="lname" name="lname" placeholder="Enter last name" required>
@@ -116,15 +143,13 @@
                                 <span class="error" id="emailError"></span>
                             </div>
                             
+                            <!-- Password and Confirm Password fields -->
                             <div class="form-group-split">
-                                <!-- Password field -->
                                 <div class="form-group">
                                     <label for="password">Password</label>
                                     <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
                                     <span class="error" id="passwordError">*Password must contain at least 8 characters, including uppercase, lowercase, number, and special character</span>
                                 </div>
-
-                                <!-- Confirm Password field -->
                                 <div class="form-group">
                                     <label for="confirm_password">Confirm Password</label>
                                     <input type="password" class="form-control" id="confirm_password" name="confirmpass" placeholder="Confirm Password" required>
@@ -132,8 +157,8 @@
                                 </div>
                             </div>
 
+                            <!-- Gender and Date of Birth fields -->
                             <div class="form-group-split">
-                                <!-- Gender field -->
                                 <div class="form-group">
                                     <label for="gender">Gender</label>
                                     <select class="form-control" id="gender" name="gender" required>
@@ -143,24 +168,30 @@
                                         <option value="other">Other</option>
                                     </select>
                                 </div>
-
-                                <!-- Date of Birth field -->
                                 <div class="form-group">
                                     <label for="dob">Date of Birth</label>
                                     <input type="text" class="form-control" id="dob" name="dob" placeholder="Enter date of birth" required>
                                     <span class="error" id="dobError">*Please enter a valid date of birth</span>
                                 </div>
                             </div>
-                            
+
                             <!-- Phone Number field -->
                             <div class="form-group">
                                 <label for="phone">Phone Number</label>
                                 <input type="tel" class="form-control" id="phone" name="phone" placeholder="Enter phone number" required>
                                 <span class="error" id="phoneError">*Enter a valid phone number</span>
                             </div>
-                            
+
+                            <!-- Face Recognition field -->
+                            <div class="form-group">
+                                <label for="face_image">Face Recognition</label>
+                                <video id="video" width="320" height="240" autoplay></video>
+                                <button type="button" id="capture">Capture</button>
+                                <input type="hidden" name="face_image" id="face_image">
+                            </div>
+
                             <!-- Register button -->
-                            <div class="button-center">
+                            <div class="text-center">
                                 <button type="submit" class="btn btn-primary">Register</button>
                             </div>
                         </form>
@@ -305,6 +336,28 @@
                     alert("Please fill all fields correctly");
                 }
             });
+        });
+
+        const video = document.getElementById('video');
+        const faceImageInput = document.getElementById('face_image');
+
+        // Access the device camera
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => {
+                video.srcObject = stream;
+            })
+            .catch(err => {
+                console.error("Error accessing camera: ", err);
+            });
+
+        document.getElementById('capture').addEventListener('click', () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const context = canvas.getContext('2d');
+            context.drawImage(video, 0, 0);
+            const dataURL = canvas.toDataURL('image/png');
+            faceImageInput.value = dataURL;  // Set the hidden input value to the captured image
         });
     </script>
 </body>

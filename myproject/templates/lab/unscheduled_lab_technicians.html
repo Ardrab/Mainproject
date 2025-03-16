@@ -3,17 +3,62 @@
 <html lang="en">
 
 <head>
-
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Free Dental Medical Hospital Website Template | Smarteyeapps.com</title>
+    <title>Unscheduled Lab Technicians</title>
     <link rel="shortcut icon" href="{% static 'assets/images/fav.jpg' %}">
     <link rel="stylesheet" href="{% static 'assets/css/bootstrap.min.css' %}">
-    <link rel="stylesheet" href="{% static 'assets/css/fontawsom-all.min.css' %}">
-    <link rel="stylesheet" href="{% static 'assets/plugins/slider/css/owl.carousel.min.css' %}">
-    <link rel="stylesheet" href="{% static 'assets/plugins/slider/css/owl.theme.default.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/fontawesome-all.min.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/style.css' %}" />
     <style>
+        body {
+            background-color: #f4f7fa; /* Light background for contrast */
+            font-family: 'Arial', sans-serif;
+        }
+
+        .container {
+            margin-top: 30px;
+        }
+
+        h2 {
+            color: #3366ff; /* Header color */
+            margin-bottom: 20px;
+        }
+
+        .list-group {
+            margin-top: 20px;
+        }
+
+        .technician-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin: 15px 0;
+            transition: transform 0.2s;
+        }
+
+        .technician-card:hover {
+            transform: scale(1.02); /* Slight zoom effect on hover */
+        }
+
+        .technician-card h5 {
+            color: #3366ff; /* Technician name color */
+            margin-bottom: 10px;
+        }
+
+        .technician-card p {
+            margin: 5px 0;
+        }
+
+        .alert {
+            margin-top: 20px;
+            background-color: #e7f3fe; /* Light blue background for alerts */
+            color: #31708f; /* Darker blue text */
+            border-color: #bce8f1; /* Border color */
+        }
+
+       
         .btn-info {
             position: absolute;
             margin-left: 50px;
@@ -42,7 +87,7 @@
             background-color: #3366ff;
             color: white;
             border-color: #3366ff;
-            margin-left: 70px;
+            margin-left: 40px;
             margin-bottom: -1000px;
             margin-top: -70px;
         }
@@ -85,25 +130,20 @@
     
         /* Optional: Adjust the dropdown menu position if needed */
         .dropdown-menu {
-            margin-top: -10px; /* Adjust this value to align the dropdown menu */
+            margin-top: -20px; /* Adjust this value to align the dropdown menu */
         }
     </style>
-<script type="text/javascript" >
-    function preventBack(){window.history.forward();}
-     setTimeout("preventBack()", 0);
-     window.onunload=function(){null};
-</script>
 </head>
 
 <body>
 
-    <!-- ################# Header Starts Here#######################--->
+    <!-- ################# Header Starts Here #######################--->
     <header>
         <div id="nav-head" class="header-nav">
             <div class="container">
                 <div class="row">
                     <div class="col-lg-2 col-md-3 no-padding col-sm-12 nav-img">
-                        <h1 class="logo"style="margin-top: 20px;">MEDLAB</h1>
+                        <h1 class="logo" style="margin-top: 20px;">MEDLAB</h1>
                         <a data-toggle="collapse" data-target="#menu" href="#menu">
                             <i class="fas d-block d-md-none small-menu fa-bars"></i>
                         </a>
@@ -113,7 +153,6 @@
                     <div id="menu" class="col-lg-7 col-md-8 d-none d-md-block nav-item">
                         <ul>
                             <li><a href="{% url 'labindex' %}">Home</a></li>
-                          
                             <li><a href="{% url 'booking_list_view' %}">Appointments</a></li>
                             <li class="nav-item dropdown1">
                                 <a class="nav-link dropdown-toggle" href="#" id="addDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -134,12 +173,8 @@
                                     <a class="dropdown-item" href="{% url 'unscheduled_lab_technicians' %}">Lab Technician Availability</a>
                                 </div>
                             </li>
-                            
                         </ul>
                     </div>
-
-                 
-                    
 
                     <!-- User Dropdown -->
                     <div class="col-md-2 d-flex justify-content-end align-items-center">
@@ -155,33 +190,45 @@
                             </div>
                         </div>
                     </div>
-                    
-
                 </div>
             </div>
         </div>
     </header>
     <!-- ################# Header Ends Here #######################--->
 
-    <br><br><br><br><br><div class="container mt-5">
+    <br><br><br><div class="container mt-5">
         <h2 class="text-center">Unscheduled Lab Technicians</h2>
         <div class="list-group">
-            {% for technician in unscheduled_technicians %}
-                <div class="technician-card">
-                  <h5>{{ technician.user.first_name }} {{ technician.user.last_name }}</h5>
-                    <p><strong>Phone No:</strong> {{ technician.user.phone }}</p>
-                    <p><strong>Specialization:</strong> {{ technician.specialization }}</p>
-                </div>
-            {% empty %}
+            {% if technicians %}
+                {% for entry in technicians %}
+                    <div class="technician-card">
+                        <h5>{{ entry.technician.user.first_name }} {{ entry.technician.user.last_name }}</h5>
+                        <p><strong>Phone No:</strong> {{ entry.technician.user.phone }}</p>
+                        <p><strong>Specialization:</strong> {{ entry.technician.specialization }}</p>
+                        {% if entry.last_appointment %}
+                            <p><strong>Last Scheduled Date:</strong> {{ entry.last_appointment }}</p>
+                        {% else %}
+                            <p><strong>Status:</strong> Not scheduled yet</p>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            {% else %}
                 <div class="alert alert-info" role="alert">
-                    No unscheduled lab technicians available.
+                    No technicians have past bookings or are unscheduled.
                 </div>
-            {% endfor %}
+            {% endif %}
         </div>
     </div>
 
     <script src="{% static 'assets/js/jquery-3.2.1.min.js' %}"></script>
     <script src="{% static 'assets/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'assets/js/jquery-3.2.1.min.js' %}"></script>
+    <script src="{% static 'assets/js/popper.min.js' %}"></script>
+    <script src="{% static 'assets/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'assets/plugins/slider/js/owl.carousel.min.js' %}"></script>
+    <script src="{% static 'assets/plugins/scroll-fixed/jquery-scrolltofixed-min.js' %}"></script>
+    <script src="{% static 'assets/js/script.js' %}"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </body>
 
 </html>

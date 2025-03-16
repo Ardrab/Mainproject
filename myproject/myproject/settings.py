@@ -198,6 +198,7 @@ USE_TZ = True
 
 # Media files settings
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # Ensure this directory exists
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 RAZORPAY_KEY_ID = 'rzp_test_ulk1JHPmrok29J'
 RAZORPAY_KEY_SECRET = 'HT1frOR0Er3mz0YsKqmrcR7c'
+CSRF_TRUSTED_ORIGINS = ['https://yourdomain.com', 'https://razorpay.com']
