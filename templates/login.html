@@ -85,6 +85,27 @@
             display: flex;
             justify-content: center; /* Center the button horizontally */
         }
+        #camera-container {
+            margin: 20px 0;
+            text-align: center;
+        }
+        .camera-buttons {
+            margin-top: 10px;
+        }
+        .or-divider {
+            text-align: center;
+            margin: 20px 0;
+            position: relative;
+        }
+        .or-divider:before,
+        .or-divider:after {
+            content: "";
+            display: inline-block;
+            width: 45%;
+            border-top: 1px solid #ddd;
+            margin: 0 10px;
+            vertical-align: middle;
+        }
     </style>
 </head>
 <body>
@@ -95,34 +116,54 @@
                     <div class="left-container"></div>
                     <div class="right-container">
                         <h2 class="text-center">Login</h2>
-                        {% if error %}
-                            <div class="alert alert-danger">{{ error }}</div>
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                            {% endfor %}
                         {% endif %}
-                        <form action="{% url 'login' %}" method="post">
+
+                        <!-- Normal Login Form -->
+                        <form id="loginForm" action="{% url 'login' %}" method="post">
                             {% csrf_token %}
                             <div class="form-group">
                                 <label for="email">Email address</label>
-                                <input type="email" class="form-control" id="email" name="email" placeholder="Enter email" required>
+                                <input type="email" class="form-control" id="email" name="email" required>
                             </div>
                             <div class="form-group">
                                 <label for="password">Password</label>
-                                <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
+                                <input type="password" class="form-control" id="password" name="password" required>
                             </div>
-                            <div class="additional-links">
-                                <a href="{% url 'password_reset_request' %}">Forgot Password?</a>
-
-                            </div>
-                            <div class="button-center">
-                                <button type="submit" class="btn btn-primary">Login</button>
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary btn-block">Login with Password</button>
                             </div>
                         </form>
-                        <button class="btn btn-google btn-block mt-3">
-                            <a href="#" class="login-link google">
-                            <img src="{% static 'images/blog/blog_05.jpeg' %}" alt="Google Logo">
-                            Sign in with Google
-                        </button>
+
+                        <div class="or-divider">OR</div>
+
+                        <!-- Face Recognition Form -->
+                        <form id="faceLoginForm" action="{% url 'login' %}" method="post">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="face-email">Email for Face Login</label>
+                                <input type="email" class="form-control" id="face-email" name="email" required>
+                            </div>
+                            <div id="camera-container" style="display: none;">
+                                <video id="video" width="320" height="240" autoplay playsinline></video>
+                                <canvas id="canvas" style="display: none;"></canvas>
+                                <div class="camera-buttons">
+                                    <button type="button" class="btn btn-primary" onclick="captureImage()">Capture</button>
+                                    <button type="button" class="btn btn-danger" onclick="toggleCamera()">Cancel</button>
+                                </div>
+                            </div>
+                            <input type="hidden" name="face_image" id="face_image">
+                            <button type="button" class="btn btn-secondary btn-block" onclick="toggleCamera()">
+                                Login with Face Recognition
+                            </button>
+                        </form>
+
                         <div class="mt-3 text-center">
                             <p>Don't have an account? <a href="{% url 'register' %}">Register here</a></p>
+                            <a href="{% url 'password_reset_request' %}">Forgot Password?</a>
                         </div>
                     </div>
                 </div>
@@ -130,8 +171,48 @@
         </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script>
+        let stream = null;
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const cameraContainer = document.getElementById('camera-container');
+        const faceImageInput = document.getElementById('face_image');
+
+        async function toggleCamera() {
+            if (cameraContainer.style.display === 'none') {
+                try {
+                    stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                    video.srcObject = stream;
+                    cameraContainer.style.display = 'block';
+                } catch (err) {
+                    alert('Could not access camera: ' + err.message);
+                }
+            } else {
+                stopCamera();
+            }
+        }
+
+        function stopCamera() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+            cameraContainer.style.display = 'none';
+        }
+
+        function captureImage() {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            const dataURL = canvas.toDataURL('image/jpeg');
+            faceImageInput.value = dataURL;
+            
+            // Submit the face login form
+            document.getElementById('faceLoginForm').submit();
+            
+            stopCamera();
+        }
+    </script>
 </body>
 </html>
+

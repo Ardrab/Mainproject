@@ -1,0 +1,733 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Admin Dashboard | MEDLAB</title>
+    <link rel="shortcut icon" href="{% static 'assets/images/fav.jpg' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/fontawesome-all.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/plugins/slider/css/owl.carousel.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/plugins/slider/css/owl.theme.default.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/style.css' %}" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript">
+        function preventBack() {window.history.forward();}
+        setTimeout("preventBack()", 0);
+        window.onunload = function() {null};
+    </script>
+    <style>
+        .btn-info {
+            background-color: #3366ff;
+            border-color: #3366ff;
+            margin-left: -100px;
+            margin-top: 30px;
+        }
+
+        .btn-info:hover {
+            background-color: #254abf;
+            border-color: #254abf;
+        }
+
+        .form-container {
+            max-width: 600px;
+            margin: auto;
+            padding: 30px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-container h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            color: #555;
+        }
+
+        .form-group input {
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            padding: 10px;
+        }
+
+        .form-group input:focus {
+            border-color: #3366ff;
+            box-shadow: 0 0 0 0.2rem rgba(51, 102, 255, 0.25);
+        }
+
+        .form-container .btn-primary {
+            background-color: #3366ff;
+            border-color: #3366ff;
+            width: 100%;
+            padding: -10px;
+        }
+
+        .form-container .btn-primary:hover {
+            background-color: #254abf;
+            border-color: #254abf;
+        }
+
+        .error {
+            color: red;
+            font-size: 0.9em;
+        }
+
+        .button-center {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .text-center a {
+            color: #3366ff;
+            text-decoration: none;
+        }
+
+        .text-center a:hover {
+            color: #254abf;
+            text-decoration: underline;
+        }
+        /* General Styles */
+        .header-nav {
+            background: #fff;
+            padding: 10px 0;
+            box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Logo */
+        .nav-img h1 {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 0;
+            padding-top: 10px;
+        }
+        
+        /* Navigation Menu */
+        .nav-item ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .nav-item ul li {
+            margin: 0 15px;
+        }
+        
+        .nav-item ul li a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 600;
+            padding: 10px 15px;
+            transition: 0.3s ease-in-out;
+        }
+        
+        .nav-item ul li a:hover {
+            color: #3366ff;
+        }
+        
+        /* User Dropdown & Test Dropdown */
+        .user-dropdown,
+        .test-dropdown {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+        
+        .btn-info.dropdown-toggle {
+            background-color: #3366ff;
+            color: white;
+            border-color: #3366ff;
+            margin: 0;
+        }
+        
+        .dropdown-menu {
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Test Dropdown */
+        .dropdown-toggle1 {
+            margin-left: 20px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        /* Speech Button */
+        .speech-btn {
+            margin-left: 20px;
+        }
+        
+        /* Align Everything */
+        .header-nav .row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .nav-item {
+            flex: 1;
+            text-align: center;
+        }
+        
+        .user-dropdown,
+        .test-dropdown,
+        .speech-btn {
+            margin-left: 15px;
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 991px) {
+            .nav-item ul {
+                flex-direction: column;
+                text-align: center;
+            }
+        
+            .nav-item ul li {
+                margin: 10px 0;
+            }
+        
+            .user-dropdown,
+            .test-dropdown {
+                justify-content: center;
+                margin-top: 10px;
+            }
+            .chatbot-container {
+                display: flex;
+                justify-content: center; /* Centers horizontally */
+                margin-top: -20px; /* Adjust as needed */
+            }
+            
+            .chatbot-icon {
+                background-color: #3366ff;
+                color: white;
+                border-radius: 50%;
+                padding: 15px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+                cursor: pointer;
+                display: inline-block;
+                transition: background-color 0.3s ease-in-out;
+                
+            }
+            
+            .chatbot-icon:hover {
+                background-color: #0056b3;
+            }
+            
+            
+    </style>
+</head>
+
+<body>
+<!-- ################# Header Starts Here #######################--->
+<header class="custom-header">
+    <div id="nav-head" class="header-nav fixed-top">
+        <div class="container">
+            <div class="row align-items-center justify-content-between">
+                <!-- Logo and Menu Toggle -->
+                <div class="col-lg-2 col-md-3 col-sm-12 d-flex align-items-center">
+                    <h1 class="logo">MEDLAB</h1>
+                    <a class="menu-toggle d-block d-md-none ms-3" data-bs-toggle="collapse" data-bs-target="#menu">
+                        <i class="fas fa-bars small-menu"></i>
+                    </a>
+                </div>
+
+                <!-- Navigation Menu -->
+                <div id="menu" class="col-lg-7 col-md-7 collapse d-md-flex justify-content-center">
+                    <ul class="nav custom-nav">
+                        <li class="nav-item"><a class="nav-link" href="{% url 'user_index' %}">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'user_bookings' %}">Booking Details</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'home_collection' %}">Home Collection</a></li>
+                    </ul>
+                </div>
+
+                <!-- Voice Button & User Dropdown -->
+                <div class="col-lg-3 col-md-3 d-flex justify-content-end align-items-center">
+                    <button type="button" id="voice-button" class="btn btn-primary">🎤 Select by Voice</button>
+
+                    <div class="dropdown">
+                        <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            Welcome, {{ user.first_name }}
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'profile' %}">Profile</a></li>
+                            <li><a class="dropdown-item" href="#">Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Chatbot Icon -->
+                <div class="chatbot-icon" onclick="redirectToChatbot()">
+                    <i class="fas fa-comments"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<script>
+    function redirectToChatbot() {
+        window.location.href = "{% url 'chatbot_view' %}";  // Redirect to the chatbot view
+    }
+</script>
+
+
+
+    <!-- Registration Form -->
+    <br><br>
+    <div class="container mt-5">
+        <div class="form-container">
+            <h2 class="text-center mb-4">Book Appointment</h2>
+            {% if error %}
+            <div class="alert alert-danger" role="alert">
+                {{ error }}
+            </div>
+            {% endif %}
+            {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}" role="alert">
+                {{ message }}
+            </div>
+            {% endfor %}
+            {% endif %}
+            <form method="post" action="{% url 'home_collection' %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="name_id">Test Name</label>
+                    <select class="form-control" id="name_id" name="name_id" required>
+                        <option value="">Select Test Name</option>
+                        {% for test_name in test_names %}
+                            <option value="{{ test_name.name_id }}">{{ test_name.test_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="test_ids" class="form-label">Test Type Names</label>
+                    <select id="test_ids" name="test_ids" class="form-control" multiple onchange="updateTests()" required>
+                        {% for test in tests %}
+                            <option value="{{ test.test_id }}">{{ test.test_type_names }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="tests_names" class="form-label">Test Names</label>
+                    <div id="test_names_container" class="mt-3">
+                        <!-- Test names will be dynamically added here as checkboxes -->
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="appointment_date" class="form-label">Appointment Date</label>
+                    <input type="date" id="appointment_date" name="appointment_date" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="appointment_time" class="form-label">Appointment Time</label>
+                    <select id="appointment_time" name="appointment_time" class="form-control" required>
+                        <!-- Time options will be populated by JavaScript -->
+                    </select>
+                </div>
+                <!-- Location field with GPS button -->
+                <div class="form-group">
+                    <label for="location" class="form-label">Location</label>
+                    <input type="text" id="location" name="location" class="form-control" placeholder="Enter your location" required>
+                    <button type="button" class="btn " id="get-location-btn" style="margin-top: 10px;">Get Current Location</button>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                if (!("SpeechRecognition" in window || "webkitSpeechRecognition" in window)) {
+                    speak("Your browser does not support Speech Recognition. Please use Google Chrome.");
+                    return;
+                }
+            
+                const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+                recognition.lang = "en-US";
+                recognition.continuous = false; // Avoid infinite loops
+                recognition.interimResults = false;
+            
+                let isRecognizing = false;
+                let step = 0;
+            
+                const voiceButton = document.getElementById("voice-button");
+                const testNameDropdown = document.getElementById("name_id");
+                const testTypeDropdown = document.getElementById("test_ids");
+                const testNamesContainer = document.getElementById("test_names_container");
+                const appointmentDateInput = document.getElementById("appointment_date");
+                const appointmentTimeDropdown = document.getElementById("appointment_time");
+                const getLocationButton = document.getElementById("get-location-btn");
+                const submitButton = document.querySelector("button[type='submit']");
+            
+                function speak(text, callback = null) {
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    utterance.rate = 1;
+                    utterance.pitch = 1;
+                    utterance.onend = function () {
+                        if (callback) callback();
+                    };
+                    window.speechSynthesis.speak(utterance);
+                }
+            
+                function startRecognition() {
+                    if (!isRecognizing) {
+                        isRecognizing = true;
+                        recognition.start();
+                    }
+                }
+            
+                function stopRecognition() {
+                    isRecognizing = false;
+                    recognition.stop();
+                }
+            
+                voiceButton.addEventListener("click", function () {
+                    step = 0;
+                    speak("Voice selection started. Please say the Test Name.", startRecognition);
+                });
+            
+                recognition.onresult = function (event) {
+                    const speechResult = event.results[event.results.length - 1][0].transcript.toLowerCase().trim();
+                    console.log("Recognized speech:", speechResult);
+                    let matched = false;
+            
+                    if (step === 0) {
+                        for (let option of testNameDropdown.options) {
+                            if (speechResult.includes(option.text.toLowerCase().trim())) {
+                                testNameDropdown.value = option.value;
+                                testNameDropdown.dispatchEvent(new Event('change'));
+                                matched = true;
+                                speak(`Selected Test Name: ${option.text}`, () => {
+                                    step = 1;
+                                    speak("Now say the Test Type.", startRecognition);
+                                });
+                                break;
+                            }
+                        }
+                        if (!matched) {
+                            speak("No matching Test Name found. Try again.", startRecognition);
+                        }
+                    } else if (step === 1) {
+                        for (let option of testTypeDropdown.options) {
+                            if (speechResult.includes(option.text.toLowerCase().trim())) {
+                                option.selected = true;
+                                testTypeDropdown.dispatchEvent(new Event('change'));
+                                matched = true;
+                                speak(`Selected Test Type: ${option.text}`, () => {
+                                    step = 2;
+                                    speak("Now say the Test Names you want to select.", startRecognition);
+                                });
+                                break;
+                            }
+                        }
+                        if (!matched) {
+                            speak("No matching Test Type found. Try again.", startRecognition);
+                        }
+                    } else if (step === 2) {
+                        const checkboxes = testNamesContainer.querySelectorAll('input[type="checkbox"]');
+                        matched = false;
+            
+                        checkboxes.forEach(checkbox => {
+                            let label = checkbox.nextElementSibling;
+                            if (label && label.textContent && speechResult.includes(label.textContent.toLowerCase().trim())) {
+                                checkbox.checked = !checkbox.checked;
+                                checkbox.dispatchEvent(new Event('change'));
+                                matched = true;
+                                speak(`Toggled Test Name: ${label.textContent}`);
+                            }
+                        });
+            
+                        if (matched) {
+                            step = 3;
+                            speak("Now say the Appointment Date. For example, ten August twenty twenty-four.", startRecognition);
+                        } else {
+                            speak("No matching Test Names found. Try again.", startRecognition);
+                        }
+                    } else if (step === 3) {
+                        let dateRegex = /(\d{1,2})\s(january|february|march|april|may|june|july|august|september|october|november|december)\s(\d{4})/;
+                        let match = speechResult.match(dateRegex);
+            
+                        if (match) {
+                            let day = match[1].padStart(2, '0');
+                            let monthMap = {
+                                "january": "01", "february": "02", "march": "03", "april": "04",
+                                "may": "05", "june": "06", "july": "07", "august": "08",
+                                "september": "09", "october": "10", "november": "11", "december": "12"
+                            };
+                            let month = monthMap[match[2].toLowerCase()];
+                            let year = match[3];
+            
+                            let formattedDate = `${year}-${month}-${day}`;
+                            appointmentDateInput.value = formattedDate;
+                            speak(`Selected Appointment Date: ${formattedDate}`, () => {
+                                step = 4;
+                                speak("Now say the Appointment Time. For example, eight o'clock AM.", startRecognition);
+                            });
+                        } else {
+                            speak("Invalid Date format. Try again.", startRecognition);
+                        }
+                    }  else if (step === 4) {
+                        const numberWords = { 
+                            "one": "1", "two": "2", "three": "3", "four": "4", "five": "5",
+                            "six": "6", "seven": "7", "eight": "8", "nine": "9", "ten": "10",
+                            "eleven": "11", "twelve": "12"
+                        };
+                    
+                        let convertedSpeech = speechResult.toLowerCase().trim();
+                    
+                        // Remove unwanted characters
+                        convertedSpeech = convertedSpeech.replace(/[^a-z0-9:.\s]/gi, "").replace(/\s+/g, " ");
+                    
+                        // Convert number words (e.g., "eight AM" → "8 AM")
+                        Object.keys(numberWords).forEach(word => {
+                            convertedSpeech = convertedSpeech.replace(new RegExp("\\b" + word + "\\b", "gi"), numberWords[word]);
+                        });
+                    
+                        // Normalize time format (Handles "8 AM", "8:00 a.m.", "eight AM", etc.)
+                        let timeRegex = /(\d{1,2})(?::?(\d{2}))?\s?(am|a\.m\.|pm|p\.m\.)?/i;
+                        let match = convertedSpeech.match(timeRegex);
+                    
+                        if (match) {
+                            let hour = parseInt(match[1], 10); // Convert to number to remove leading zero
+                            let minutes = match[2] ? match[2].padStart(2, '0') : "00"; // Default to ":00"
+                            let period = match[3] ? match[3].replace(".", "").toUpperCase() : "AM"; // Normalize AM/PM format
+                    
+                            let formattedTime = `${hour}:${minutes} ${period}`;
+                            console.log("Formatted Time:", formattedTime); // Debugging
+                    
+                            let matched = false;
+                            let normalizedFormattedTime = formattedTime.trim().replace(/\s+/g, " ").replace(/\.+$/, ""); // Remove trailing periods
+                            
+                            console.log("Formatted Time (normalized):", normalizedFormattedTime);
+                            
+                            for (let option of appointmentTimeDropdown.options) {
+                                let optionText = option.text.trim().replace(/\s+/g, " "); // Normalize dropdown values
+                                console.log(`Checking: '${normalizedFormattedTime}' vs '${optionText}'`);
+                            
+                                if (normalizedFormattedTime === optionText) {  // Strict comparison after normalization
+                                    appointmentTimeDropdown.value = option.value;
+                                    appointmentTimeDropdown.dispatchEvent(new Event('change'));
+                                    matched = true;
+                            
+                                    speak(`Selected Appointment Time: ${formattedTime}`, () => {
+                                        speak("Getting your location.", () => {
+                                            getLocationButton.click();
+                                            speak("Submitting the form.", () => submitButton.click());
+                                        });
+                                    });
+                                    break;
+                                }
+                            }
+                            
+                            if (!matched) {
+                                console.log(`Time not found in dropdown: '${normalizedFormattedTime}'`);
+                                speak("No matching appointment time found. Please check the available options.", startRecognition);
+                            }
+                            
+                    
+                            
+                        } else {
+                            speak("Invalid time format. Try again.", startRecognition);
+                        }
+                    }
+                    
+                    
+                };
+            
+                recognition.onerror = function (event) {
+                    speak("Speech recognition error: " + event.error);
+                    isRecognizing = false;
+                };
+            
+                recognition.onend = function () {
+                    isRecognizing = false;
+                };
+            });
+            
+            
+            
+          
+            
+            
+            
+            
+            document.addEventListener('DOMContentLoaded', function() {
+                document.getElementById('name_id').addEventListener('change', function() {
+                    const nameId = this.value;
+                    if (nameId) {
+                        fetch(`/get_test_types_by_name/${nameId}/`)
+                            .then(response => response.json())
+                            .then(data => {
+                                const select = document.getElementById('test_ids');
+                                select.innerHTML = ''; // Clear existing options
+                                data.test_types.forEach(type => {
+                                    const option = document.createElement('option');
+                                    option.value = type.test_id;
+                                    option.textContent = type.test_type_names;
+                                    select.appendChild(option);
+                                });
+                            })
+                            .catch(error => console.error('Error fetching test types:', error));
+                    }
+                });
+
+                document.getElementById('test_ids').addEventListener('change', function() {
+                    updateTests();
+                });
+
+                function updateTests() {
+                    const selectedIds = Array.from(document.getElementById('test_ids').selectedOptions).map(option => option.value);
+                    const testNamesContainer = document.getElementById('test_names_container');
+                    testNamesContainer.innerHTML = ''; // Clear existing test names
+
+                    if (selectedIds.length === 0) {
+                        return;
+                    }
+
+                    selectedIds.forEach(testId => {
+                        fetch(`/get_tests_by_type/${testId}/`)
+                            .then(response => response.json())
+                            .then(data => {
+                                data.tests.forEach(test => {
+                                    const checkbox = document.createElement('div');
+                                    checkbox.className = 'form-check';
+                                    const checkboxInput = document.createElement('input');
+                                    checkboxInput.type = 'checkbox';
+                                    checkboxInput.name = 'selected_test_types'; // Ensure this matches the view
+                                    checkboxInput.value = test.testtype_id; // Ensure this is the correct ID
+                                    console.log('Creating checkbox for test:', test);
+                                    console.log('Checkbox value (testtype_id):', test.testtype_id); // Debug log
+                                    checkboxInput.className = 'form-check-input';
+                                    const checkboxLabel = document.createElement('label');
+                                    checkboxLabel.className = 'form-check-label';
+                                    checkboxLabel.textContent = test.tests_names;
+                                    checkbox.appendChild(checkboxInput);
+                                    checkbox.appendChild(checkboxLabel);
+                                    testNamesContainer.appendChild(checkbox);
+                                });
+                            })
+                            .catch(error => console.error('Error fetching test names:', error));
+                    });
+                }
+
+                // Populate appointment time options from 8:00 AM to 6:00 PM
+                const timeSelect = document.getElementById('appointment_time');
+                const times = [];
+
+                for (let hour = 8; hour <= 18; hour++) {
+                    for (let minute = 0; minute < 60; minute += 30) {
+                        const ampm = hour >= 12 ? 'PM' : 'AM';
+                        const displayHour = hour > 12 ? hour - 12 : (hour === 0 ? 12 : hour);
+                        const time = `${displayHour}:${minute === 0 ? '00' : minute} ${ampm}`;
+                        times.push(time);
+                    }
+                }
+
+                times.forEach(time => {
+                    const option = document.createElement('option');
+                    option.value = time;
+                    option.textContent = time;
+                    timeSelect.appendChild(option);
+                });
+
+                // Add this new event listener for form submission
+                document.querySelector('form').addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const selectedTestTypes = document.querySelectorAll('input[name="selected_test_types"]:checked');
+                    
+                    console.log('Selected test types:', selectedTestTypes);
+                    
+                    if (selectedTestTypes.length === 0) {
+                        alert('Please select at least one test type.');
+                        return;
+                    }
+                    
+                    // Log form data for debugging
+                    const formData = new FormData(this);
+                    console.log('Form data:');
+                    for (let [key, value] of formData.entries()) {
+                        console.log(key, value);
+                    }
+                    
+                    // Additional check for undefined values
+                    const testTypeValues = formData.getAll('selected_test_types[]');
+                    console.log('Test type values:', testTypeValues);
+                    if (testTypeValues.some(value => value === 'undefined')) {
+                        console.error('Found undefined value in selected test types');
+                        alert('There was an error with the selected test types. Please try again.');
+                        return;
+                    }
+                    
+                    // Submit the form
+                    this.submit();
+                });
+            });
+
+            var today = new Date().toISOString().split('T')[0];
+            document.getElementById('appointment_date').setAttribute('min', today);
+            document.addEventListener('DOMContentLoaded', function () {
+                // GPS Location functionality
+                document.getElementById('get-location-btn').addEventListener('click', function() {
+                    if (navigator.geolocation) {
+                        navigator.geolocation.getCurrentPosition(
+                            function(position) {
+                                const latitude = position.coords.latitude;
+                                const longitude = position.coords.longitude;
+        
+                                // Fetch address from OpenStreetMap API (Nominatim)
+                                fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`)
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        console.log(data);
+        
+                                        // Extract address components
+                                        const houseNumber = data.address.house_number || "";
+                                        const road = data.address.road || "";
+                                        const neighbourhood = data.address.neighbourhood || "";
+                                        const suburb = data.address.suburb || "";
+                                        const city = data.address.city || data.address.town || data.address.village || "";
+                                        const state = data.address.state || "";
+                                        const country = data.address.country || "";
+        
+                                        // Create a formatted address string (without postcode)
+                                        let addressParts = [houseNumber, road, neighbourhood, suburb, city, state, country];
+        
+                                        // Remove empty values and join with ", "
+                                        let fullAddress = addressParts.filter(part => part.trim() !== "").join(", ");
+        
+                                        // Display the formatted address
+                                        document.getElementById('location').value = fullAddress;
+                                    })
+                                    .catch(error => {
+                                        console.error('Error fetching location:', error);
+                                        alert('Could not fetch location details.');
+                                    });
+                            },
+                            function(error) {
+                                alert('Error getting location: ' + error.message);
+                            }
+                        );
+                    } else {
+                        alert('Geolocation is not supported by this browser.');
+                    }
+                });
+            });
+        </script>
+        <script src="{% static 'assets/js/jquery.min.js' %}"></script>
+        <script src="{% static 'assets/js/bootstrap.bundle.min.js' %}"></script>
+        <script src="{% static 'assets/plugins/slider/js/owl.carousel.min.js' %}"></script>
+        <script src="{% static 'assets/js/main.js' %}"></script>
+    </div>
+</body>
+
+</html>

@@ -67,9 +67,9 @@ try:
     last_name_input = driver.find_element(By.NAME, 'lname')
     email_input = driver.find_element(By.NAME, 'email')
 
-    first_name_input.send_keys('Lina')  # Ensure this field is filled
+    first_name_input.send_keys('Mina')  # Ensure this field is filled
     last_name_input.send_keys('B')      # Ensure this field is filled
-    email_input.send_keys('linab@gmail.com')  # Ensure this field is filled
+    email_input.send_keys('Minab@gmail.com')  # Ensure this field is filled
     time.sleep(2)  # Wait for 2 seconds
 
     # Step 9: Submit the registration form

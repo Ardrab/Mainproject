@@ -4,6 +4,7 @@ from django.db import models
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.conf import settings
 
 class User(AbstractUser):
     GENDER_CHOICES = [
@@ -21,8 +22,7 @@ class User(AbstractUser):
     phone = models.CharField(max_length=15, null=True, blank=True)
     email = models.EmailField(unique=True)  # Ensure email is unique
     role = models.IntegerField(default=0)
-    from django.db import models
-from django.conf import settings
+    face_image = models.ImageField(upload_to='face_images/', null=True, blank=True)
 
 class UserProfile(models.Model):
     lad_id = models.AutoField(primary_key=True)
@@ -75,15 +75,38 @@ class TestType(models.Model):
 
     def __str__(self):
         return self.tests_names
+class HomeCollection(models.Model):
+    location = models.CharField(max_length=255)  # Location field
+    created_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return f"HomeCollection at {self.location}"
 
 class Booking(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     appointment_date = models.DateField()
     appointment_time = models.TimeField()
-    status = models.CharField(max_length=20, choices=[('pending', 'Pending'), ('scheduled', 'Scheduled')])
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('scheduled', 'Scheduled'),
+        ('collected', 'Collected'),
+        ('test done', 'Test Done'),
+    ]
+    
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     test = models.ForeignKey(TestName, on_delete=models.CASCADE)
     test_types = models.ManyToManyField(TestType, related_name='bookings')
+    home_collection = models.ForeignKey(
+        HomeCollection,
+        on_delete=models.SET_NULL,  # Allows the reference to be null if no home collection is involved
+        null=True,
+        blank=True,
+        related_name='bookings'
+    )
+
+
+
+
 
     def __str__(self):
         return f"Booking for {self.user} on {self.appointment_date} at {self.appointment_time}"

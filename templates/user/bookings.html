@@ -3,6 +3,7 @@
 <html lang="en">
 
 <head>
+
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Free Dental Medical Hospital Website Template | Smarteyeapps.com</title>
@@ -69,63 +70,18 @@
         .dropdown-divider {
             margin: 0.5rem 0;
         }
-
-        .dropdown-toggle1 {
+        .dropdown-toggle1{
             margin-left: -350px;
             margin-top: 30px;
-        }
-
-        .body {
-            margin-bottom: -300px;
-            margin-top: -300px;
-        }
-
-        .profile-container {
-            background: #ffffff;
-            border-radius: 10px;
-            padding: 30px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            margin-top: 50px;
-        }
-
-        .profile-container h2 {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 20px;
-            text-align: center;
-            color: #333;
-        }
-
-        .profile-info {
-            font-size: 16px;
-            line-height: 1.8;
-            color: #555;
-        }
-
-        .profile-info p {
-            margin: 0 0 10px;
-        }
-
-        .profile-info p strong {
-            color: #333;
-        }
-
-        .profile-container .btn-primary {
-            background-color: #3366ff;
-            border-color: #3366ff;
-            padding: 10px 20px;
-            font-size: 16px;
-            margin-top: 20px;
-        }
-
-        .profile-container .btn-primary:hover {
-            background-color: #254bd0;
-            border-color: #254bd0;
         }
     </style>
 
 </head>
-
+<script type="text/javascript" >
+    function preventBack(){window.history.forward();}
+     setTimeout("preventBack()", 0);
+     window.onunload=function(){null};
+</script>
 <body>
 
     <!-- ################# Header Starts Here#######################--->
@@ -143,26 +99,22 @@
                     <!-- Navigation Menu -->
                     <div id="menu" class="col-lg-7 col-md-8 d-none d-md-block nav-item">
                         <ul>
-                            <li><a href="{% url 'index' %}">Home</a></li>
-                            <li><a href="#about">About Us</a></li>
+                            <li><a href="{% url 'user_index' %}">Home</a></li>
+                            <li><a href="{% url 'user_bookings' %}">Booking Details</a></li>
                             <li><a href="#services">Services</a></li>
                             <li><a href="#gallery">Gallery</a></li>
-                            <li><a href="#contact">Contact Us</a></li>
+                            
                         </ul>
                     </div>
 
-                    <!-- Book Appointment Button -->
-                    <div class="col-md-1">
-                        <div class="btn btn-info">
-                            <a href="{% url 'medicalhistory' %}" class="text-white">Book Appointment</a>
-                        </div>
-                    </div>
+                    
+                    
 
                     <!-- User Dropdown -->
                     <div class="col-md-2 d-flex justify-content-end align-items-center">
                         <div class="dropdown">
                             <button class="btn btn-info dropdown-toggle" type="button" id="userDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Welcome, {{ user.email }}
+                                Welcome, {{ user.first_name }}
                             </button>
                             <div class="dropdown-menu" aria-labelledby="userDropdown">
                                 <a class="dropdown-item" href="{% url 'profile' %}">Profile</a>
@@ -177,46 +129,84 @@
                             <h6>Select Test</h6>
                         </div>
                         <div class="dropdown-menu" aria-labelledby="testDropdown">
-                            <a class="dropdown-item" href="{% url 'blood' %}">Blood Test</a>
+                            <a class="dropdown-item" href="{% url 'add_test_type' %}">Blood Test</a>
                             <a class="dropdown-item" href="{% url 'swab' %}">Swab Test</a>
                             <a class="dropdown-item" href="{% url 'urine' %}">Urine Test</a>
                             <a class="dropdown-item" href="#">X-ray</a>
                             <a class="dropdown-item" href="#">MRI</a>
                         </div>
                     </div>
+                    
+
                 </div>
             </div>
         </div>
     </header>
 
-    <br><br><br><br><br>
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-10">
-                <div class="profile-container">
-                    <h2>Profile View</h2>
-                    <div class="profile-info">
-                        <p><strong>First Name:</strong> {{ user.first_name }}</p>
-                        <p><strong>Last Name:</strong> {{ user.last_name }}</p>
-                        <p><strong>Email:</strong> {{ user.email }}</p>
-                        <p><strong>Gender:</strong> {{ user.gender }}</p>
-                        <p><strong>Date of Birth:</strong> {{ user.dob }}</p>
-                        <p><strong>Phone Number:</strong> {{ user.phone }}</p>
-                    </div>
-                    <div class="text-center">
-                        <a href="{% url 'edit_profile' %}" class="btn btn-primary">Edit Profile</a>
-                    </div>
-                </div>
-            </div>
-        </div>
+    
+    <div class="container mt-5">
+        {% if bookings %}
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Appointment Date</th>
+                        <th>Appointment Time</th>
+                        <th>Test Types</th>
+                        <th>Status</th>
+                        <th>Result</th>
+                        <th>Bill</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for booking in bookings %}
+                        <tr>
+                            <td>{{ booking.appointment_date|date:"Y-m-d" }}</td>
+                            <td>{{ booking.appointment_time|time:"g:i A" }}</td>
+                            <td>
+                                {% if booking.test_types.all %}
+                                    {{ booking.test_types.all|join:", " }}
+                                {% else %}
+                                    No test types available
+                                {% endif %}
+                            </td>
+                            
+                            <td>
+                                {% if booking.status == 'test done' %}
+                                    <a href="{% url 'view_test_results' booking.id %}">View Test Results</a>
+                                {% else %}
+                                    <span style="color: gray;">Results Not Available</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if booking.status == 'scheduled' or booking.status == 'collected' %}
+                                    <a href="{% url 'generate_bill' booking.id %}" class="btn btn-primary">Generate Bill</a>
+                                {% else %}
+                                    <span style="color: gray;">Bill Not Available</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="text-center">No bookings found.</p>
+        {% endif %}
     </div>
-
+    
+    <footer>
+        <div class="container">
+            <p class="text-center">© 2024 MEDLAB. All rights reserved.</p>
+        </div>
+    </footer>
+    
     <script src="{% static 'assets/js/jquery-3.2.1.min.js' %}"></script>
-    <script src="{% static 'assets/js/popper.min.js' %}"></script>
     <script src="{% static 'assets/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'assets/js/popper.min.js' %}"></script>
     <script src="{% static 'assets/plugins/slider/js/owl.carousel.min.js' %}"></script>
     <script src="{% static 'assets/plugins/scroll-fixed/jquery-scrolltofixed-min.js' %}"></script>
     <script src="{% static 'assets/js/script.js' %}"></script>
+    
+
 
 </body>
 

@@ -9,7 +9,7 @@
         /* Basic styling for the chatbot */
         body {
             font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #e3f2fd, #bbdefb); /* Gradient background */
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
             margin: 0;
             padding: 20px;
         }
@@ -18,18 +18,18 @@
             margin: auto;
             background: #ffffff;
             padding: 20px;
-            border-radius: 15px; /* Rounded corners */
+            border-radius: 15px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
             overflow: hidden;
-            border: 1px solid #e1e1e1; /* Subtle border */
+            border: 1px solid #e1e1e1;
         }
         h1 {
             text-align: center;
             color: #007bff;
             margin-bottom: 20px;
-            font-size: 28px; /* Increased font size */
-            font-weight: bold; /* Bold title */
-            text-transform: uppercase; /* Uppercase title */
+            font-size: 28px;
+            font-weight: bold;
+            text-transform: uppercase;
         }
         .input-group {
             display: flex;
@@ -46,23 +46,33 @@
             transition: border-color 0.3s;
         }
         #disease:focus {
-            border-color: #007bff; /* Highlight border on focus */
-            outline: none; /* Remove default outline */
+            border-color: #007bff;
+            outline: none;
         }
-        #getSymptoms {
+        #getSymptoms, #voiceInput {
             padding: 15px;
-            background-color: #28a745; /* Green button */
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
             font-size: 16px;
-            transition: background-color 0.3s, transform 0.2s; /* Smooth transitions */
+            transition: background-color 0.3s, transform 0.2s;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
         }
+        #getSymptoms {
+            background-color: #28a745;
+            margin-right: 5px;
+        }
         #getSymptoms:hover {
-            background-color: #218838; /* Darker green on hover */
-            transform: translateY(-2px); /* Slight lift on hover */
+            background-color: #218838;
+            transform: translateY(-2px);
+        }
+        #voiceInput {
+            background-color: #ff6f00;
+        }
+        #voiceInput:hover {
+            background-color: #e65100;
+            transform: translateY(-2px);
         }
         .chat-message {
             margin: 10px 0;
@@ -71,51 +81,47 @@
             transition: transform 0.2s;
         }
         .chat-message:hover {
-            transform: scale(1.02); /* Slight zoom on hover */
+            transform: scale(1.02);
         }
         .bot-message {
-            background-color: #d1e7dd; /* Bot message background */
+            background-color: #d1e7dd;
             padding: 10px;
             border-radius: 10px;
             margin-left: auto;
             max-width: 70%;
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-            position: relative; /* For pseudo-element */
+            position: relative;
         }
         .bot-message:before {
             content: '';
             position: absolute;
-            left: -15px; /* Arrow position */
-            top: 10px; /* Arrow position */
-            width: 0;
-            height: 0;
+            left: -15px;
+            top: 10px;
             border-top: 10px solid transparent;
             border-bottom: 10px solid transparent;
-            border-right: 10px solid #d1e7dd; /* Arrow color */
+            border-right: 10px solid #d1e7dd;
         }
         .user-message {
-            background-color: #cfe2ff; /* User message background */
+            background-color: #cfe2ff;
             padding: 10px;
             border-radius: 10px;
             margin-right: auto;
             max-width: 70%;
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-            position: relative; /* For pseudo-element */
+            position: relative;
         }
         .user-message:after {
             content: '';
             position: absolute;
-            right: -15px; /* Arrow position */
-            top: 10px; /* Arrow position */
-            width: 0;
-            height: 0;
+            right: -15px;
+            top: 10px;
             border-top: 10px solid transparent;
             border-bottom: 10px solid transparent;
-            border-left: 10px solid #cfe2ff; /* Arrow color */
+            border-left: 10px solid #cfe2ff;
         }
         #backButton {
             padding: 10px 15px;
-            background-color: #007bff; /* Blue button */
+            background-color: #007bff;
             color: white;
             border: none;
             border-radius: 5px;
@@ -128,23 +134,23 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
         }
         #backButton:hover {
-            background-color: #0056b3; /* Darker blue on hover */
+            background-color: #0056b3;
         }
         #chatWindow {
-            max-height: 400px; 
-            overflow-y: auto; 
-            padding: 10px; 
-            border: 1px solid #e1e1e1; 
-            border-radius: 5px; 
-            background-color: #f9f9f9; 
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Soft shadow */
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 10px;
+            border: 1px solid #e1e1e1;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
 <body>
     <div class="chat-container">
         <h1>Healthcare Chatbot</h1>
-        
+
         <!-- Back button -->
         <button id="backButton" onclick="window.location.href='{% url 'user_index' %}';">Back to User Index</button>
 
@@ -152,43 +158,60 @@
             <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
             <input type="text" id="disease" placeholder="Type your message..." autocomplete="off">
             <button id="getSymptoms">Send</button>
+            <button id="voiceInput">🎤</button>
         </div>
         <div id="chatWindow"></div>
     </div>
 
     <script>
         $(document).ready(function() {
-            $('#getSymptoms').click(function() {
-                var disease = $('#disease').val().trim(); // Trim whitespace
-                var csrfToken = $('input[name="csrfmiddlewaretoken"]').val(); // Get CSRF token
+            function sendMessage(disease) {
+                var csrfToken = $('input[name="csrfmiddlewaretoken"]').val();
 
-                // Append user message to chat window
                 if (disease) {
                     $('#chatWindow').append(`<div class="chat-message user-message">${disease}</div>`);
-                    $('#disease').val(''); // Clear input
+                    $('#disease').val('');
 
-                    // Respond to greeting
                     if (disease.toLowerCase() === 'hello') {
                         $('#chatWindow').append(`<div class="chat-message bot-message">I am here to help! Please type the disease name.</div>`);
-                        $('#chatWindow').scrollTop($('#chatWindow')[0].scrollHeight); // Scroll to the bottom
-                        return; // Exit early to prevent further processing
+                        return;
                     }
 
-                    // Request symptoms
                     $.post('/healthchatbot/get_symptoms/', { 
                         disease: disease,
-                        csrfmiddlewaretoken: csrfToken // Include CSRF token
+                        csrfmiddlewaretoken: csrfToken
                     }, function(data) {
                         var responseMessage = data.symptoms.join(', ') || 'No symptoms found.';
-                        // Append bot response to chat window
                         $('#chatWindow').append(`<div class="chat-message bot-message">${responseMessage}</div>`);
-                        $('#chatWindow').scrollTop($('#chatWindow')[0].scrollHeight); // Scroll to the bottom
                     }).fail(function() {
                         $('#chatWindow').append(`<div class="chat-message bot-message">Error occurred while getting symptoms.</div>`);
-                        $('#chatWindow').scrollTop($('#chatWindow')[0].scrollHeight); // Scroll to the bottom
                     });
                 }
+            }
+
+            $('#getSymptoms').click(function() {
+                var disease = $('#disease').val().trim();
+                sendMessage(disease);
             });
+
+            // Speech Recognition
+            const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.lang = 'en-US';
+            recognition.continuous = false;
+
+            $('#voiceInput').click(function() {
+                recognition.start();
+            });
+
+            recognition.onresult = function(event) {
+                var spokenText = event.results[0][0].transcript;
+                $('#disease').val(spokenText);
+                sendMessage(spokenText);
+            };
+
+            recognition.onerror = function(event) {
+                alert('Speech recognition error: ' + event.error);
+            };
         });
     </script>
 </body>

@@ -63,7 +63,11 @@ path('labtech/schedule/<int:booking_id>/', views.schedule_lab_technician_view, n
     path('booking/<int:booking_id>/download-test-report/', views.download_test_report_by_booking, name='download_test_report_by_booking'), 
     path('generate_bill/<int:booking_id>/', views.generate_bill, name='generate_bill'),# New URL pattern
       # Updated to include booking_id# URL for viewing user bookings
-]    
+     path('user/home_collection/', views.home_collection, name='home_collection'),
+     path('mark-test-done/<int:booking_id>/', views.mark_test_done, name='mark_test_done'),
+]
+    
+
 
 if settings.DEBUG:
        urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -155,62 +155,127 @@
             </div>
         </div>
     </header>
-    <br><br><br><br><br><div class="container mt-5">
+    <br><br><br><br><br><div class="container-fluid mt-5">
         <h2 class="text-center">Scheduled Appointments</h2>
         <div class="card">
             <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <form method="get" class="form-inline">
+                            <input type="text" name="search_booking_id" class="form-control mr-2"
+                                   placeholder="Search by Booking ID" value="{{ request.GET.search_booking_id }}">
+                            <input type="hidden" name="sort_by" value="{{ request.GET.sort_by }}">
+                            <button type="submit" class="btn btn-primary">Search</button>
+                        </form>
+                    </div>
+                    <div class="col-md-6 text-right">
+                        <form method="get" class="form-inline justify-content-end">
+                            <label for="sort_by" class="mr-2">Sort by:</label>
+                            <select name="sort_by" class="form-control mr-2" onchange="this.form.submit()">
+                                <option value="">Select</option>
+                                <option value="asc" {% if request.GET.sort_by == 'asc' %}selected{% endif %}>Date Ascending</option>
+                                <option value="desc" {% if request.GET.sort_by == 'desc' %}selected{% endif %}>Date Descending</option>
+                            </select>
+                            <input type="hidden" name="search_booking_id" value="{{ request.GET.search_booking_id }}">
+                        </form>
+                    </div>
+                </div>
                 {% if scheduled_requests %}
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Appointment Date</th>
-                                <th>Appointment Time</th>
-                                <th>User Name</th>
-                                <th>Test Types</th>
-                                <th>Collection Status</th> <!-- New column for collection status -->
-                                <th>Action</th> <!-- New column for action button -->
-                                <th>Add Result</th> <!-- New column for adding test result -->
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for request in scheduled_requests %}
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped table-hover w-100">
+                            <thead class="thead-dark">
                                 <tr>
-                                    <td>{{ request.appointment_date|date:"Y-m-d" }}</td>
-                                    <td>{{ request.appointment_time|time:"g:i A" }}</td>
-                                    <td>{{ request.user_name }}</td>
-                                    <td>{{ request.test_types }}</td>
-                                    <td>
-                                        {% if request.is_collected %}
-                                            Collected
-                                        {% else %}
-                                            Not Collected
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        <form action="{% url 'toggle_collection_status' request.booking_id %}" method="post">
-                                            {% csrf_token %}
-                                            <button type="submit" class="btn btn-info2">
-                                                {% if request.is_collected %}
-                                                    Mark as Not Collected
-                                                {% else %}
-                                                    Mark as Collected
-                                                {% endif %}
-                                            </button>
-                                        </form>
-                                    </td>
-                                    <td>
-                                        <a href="{% url 'create_test_result' request.booking_id %}" class="btn btn-info1">Add Result</a>  <!-- Updated name -->
-                                    </td>
+                                    <th style="width: 10%;">Booking ID</th>
+
+                                    <th style="width: 12%;">Appointment Date</th>
+                                    <th style="width: 12%;">Appointment Time</th>
+                                    <th style="width: 15%;">User Name</th>
+                                    <th style="width: 15%;">Test Types</th>
+                                    <th style="width: 10%;">Type of Booking</th>
+                                    <th style="width: 10%;">Collection Status</th>
+                                    <th style="width: 10%;">Test Done Status</th>
+                                    <th style="width: 8%;">Add Result</th>
+                                    <th style="width: 8%;">Location</th>
                                 </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {% for request in scheduled_requests %}
+                                    <tr>
+                                        <td>{{ request.booking_id }}</td>
+
+                                        <td>{{ request.appointment_date|date:"Y-m-d" }}</td>
+                                        <td>{{ request.appointment_time|time:"g:i A" }}</td>
+                                        <td>{{ request.user_name }}</td>
+                                        <td>{{ request.test_types }}</td>
+                                        <td>{{ request.type_of_booking }}</td>
+
+    
+                                        <!-- Collection Status Button -->
+                                        <td>
+                                            <form action="{% url 'toggle_collection_status' request.booking_id %}" method="post">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-sm {% if request.is_collected %}btn-danger{% else %}btn-success{% endif %}">
+                                                    {% if request.is_collected %}
+                                                        Mark as Not Collected
+                                                    {% else %}
+                                                        Mark as Collected
+                                                    {% endif %}
+                                                </button>
+                                            </form>
+                                        </td>
+    
+                                        <!-- Test Done Status -->
+                                        <td>
+                                            {% if request.status in "Pending Scheduled Collected" %}
+                                                <button class="btn btn-sm btn-secondary" disabled>Test Not Done</button>
+                                            {% else %}
+                                                <form action="{% url 'mark_test_done' request.booking_id %}" method="post">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-sm {% if request.status == 'test done' %}btn-secondary{% else %}btn-primary{% endif %}">
+                                                        {% if request.status == "test done" %}
+                                                            Test Completed
+                                                        {% else %}
+                                                            Mark as Test Done
+                                                        {% endif %}
+                                                    </button>
+                                                </form>
+                                            {% endif %}
+                                        </td>
+    
+                                        <!-- Add Result Button -->
+                                     <!-- Add Result Button -->
+<td>
+    {% if request.status == "test done" %}
+        <a href="{% url 'create_test_result' request.booking_id %}" class="btn btn-secondary btn-sm">Add Result</a>
+    
+    {% endif %}
+</td>
+
+                                        
+    
+                                        <!-- Location -->
+                                        <td>
+                                            {% if request.type_of_booking == "Home Collection" %}
+                                                <a href="https://www.google.com/maps/search/?api=1&query={{ request.location|urlencode }}" 
+                                                   target="_blank" class="btn btn-sm btn-secondary">
+                                                    View Location
+                                                </a>
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
                 {% else %}
                     <p class="text-center">No scheduled appointments found.</p>
                 {% endif %}
             </div>
         </div>
     </div>
+    
 
     <script src="{% static 'assets/js/jquery-3.2.1.min.js' %}"></script>
     <script src="{% static 'assets/js/bootstrap.min.js' %}"></script>

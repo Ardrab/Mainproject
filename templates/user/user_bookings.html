@@ -19,61 +19,137 @@
          window.onunload=function(){null};
     </script>
     <style>
-        .btn-info {
-            position: absolute;
-            left: 70px;
-            top: 20px;
-            background-color: #3366ff;
-        }
+        /* General Styles */
+.header-nav {
+    background: #fff;
+    padding: 10px 0;
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+}
 
-        .login-btn {
-            position: absolute;
-            right: 30px;
-            top: 0px;
-            background-color: #3366ff;
-        }
+/* Logo */
+.nav-img h1 {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 0;
+    padding-top: 10px;
+}
 
-        .move-left {
-            position: absolute;
-            left: -150px;
-        }
+/* Navigation Menu */
+.nav-item ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
-        .ml-2 {
-            position: absolute;
-            left: 100px;
-        }
+.nav-item ul li {
+    margin: 0 15px;
+}
 
-        .btn-info.dropdown-toggle {
-            background-color: #3366ff;
-            color: white;
-            border-color: #3366ff;
-            margin-left: -50px;
-            margin-bottom: -1000px;
-            margin-top: -40px;
-        }
+.nav-item ul li a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 600;
+    padding: 10px 15px;
+    transition: 0.3s ease-in-out;
+}
 
-        .dropdown-menu {
-            min-width: 120px;
-            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-            right: auto !important;
-            left: 0 !important;
-        }
+.nav-item ul li a:hover {
+    color: #3366ff;
+}
 
-        .dropdown-menu a {
-            color: #333;
-        }
+/* User Dropdown & Test Dropdown */
+.user-dropdown,
+.test-dropdown {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
 
-        .dropdown-menu a:hover {
-            background-color: #f1f1f1;
-        }
+.btn-info.dropdown-toggle {
+    background-color: #3366ff;
+    color: white;
+    border-color: #3366ff;
+    margin: 0;
+}
 
-        .dropdown-divider {
-            margin: 0.5rem 0;
-        }
-        .dropdown-toggle1{
-            margin-left: -350px;
-            margin-top: 30px;
-        }
+.dropdown-menu {
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+}
+
+/* Test Dropdown */
+.dropdown-toggle1 {
+    margin-left: 20px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+/* Speech Button */
+.speech-btn {
+    margin-left: 20px;
+}
+
+/* Align Everything */
+.header-nav .row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.nav-item {
+    flex: 1;
+    text-align: center;
+}
+
+.user-dropdown,
+.test-dropdown,
+.speech-btn {
+    margin-left: 15px;
+}
+
+/* Mobile Responsive */
+@media (max-width: 991px) {
+    .nav-item ul {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .nav-item ul li {
+        margin: 10px 0;
+    }
+
+    .user-dropdown,
+    .test-dropdown {
+        justify-content: center;
+        margin-top: 10px;
+    }
+    .chatbot-container {
+        display: flex;
+        justify-content: center; /* Centers horizontally */
+        margin-top: -20px; /* Adjust as needed */
+    }
+    
+    .chatbot-icon {
+        background-color: #3366ff;
+        color: white;
+        border-radius: 50%;
+        padding: 15px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        cursor: pointer;
+        display: inline-block;
+        transition: background-color 0.3s ease-in-out;
+        
+    }
+    
+    .chatbot-icon:hover {
+        background-color: #0056b3;
+    }
+    
+}
+
     </style>
 
 </head>
@@ -95,53 +171,112 @@
                             <i class="fas d-block d-md-none small-menu fa-bars"></i>
                         </a>
                     </div>
+<!-- Navigation Menu -->
+<div id="menu" class="col-lg-7 col-md-8 d-none d-md-block nav-item">
+    <ul>
+        <li><a href="{% url 'user_index' %}" data-name="home">Home</a></li>
+        <li><a href="{% url 'user_bookings' %}" data-name="booking details">Booking Details</a></li>
+        <li><a href="{% url 'home_collection' %}" data-name="home collection">Home Collection</a></li>
+     
+    </ul>
+</div>
+<div class="ml-3">
+    <button id="speechNavBtn" class="btn btn-outline-primary">
+        <i class="fas fa-microphone"></i> Speak
+    </button>
+</div>
 
-                    <!-- Navigation Menu -->
-                    <div id="menu" class="col-lg-7 col-md-8 d-none d-md-block nav-item">
-                        <ul>
-                            <li><a href="{% url 'user_index' %}">Home</a></li>
-                            <li><a href="{% url 'user_bookings' %}">Booking Details</a></li>
-                            <li><a href="#services">Services</a></li>
-                            <li><a href="#gallery">Gallery</a></li>
-                            
-                        </ul>
-                    </div>
 
-                    
-                    
-
-                    <!-- User Dropdown -->
-                    <div class="col-md-2 d-flex justify-content-end align-items-center">
-                        <div class="dropdown">
-                            <button class="btn btn-info dropdown-toggle" type="button" id="userDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Welcome, {{ user.first_name }}
-                            </button>
-                            <div class="dropdown-menu" aria-labelledby="userDropdown">
-                                <a class="dropdown-item" href="{% url 'profile' %}">Profile</a>
-                                <a class="dropdown-item" href="#">Settings</a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="dropdown">
-                        <div id="testDropdown" class="dropdown-toggle1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <h6>Select Test</h6>
-                        </div>
-                        <div class="dropdown-menu" aria-labelledby="testDropdown">
-                            <a class="dropdown-item" href="{% url 'add_test_type' %}">Blood Test</a>
-                            <a class="dropdown-item" href="{% url 'swab' %}">Swab Test</a>
-                            <a class="dropdown-item" href="{% url 'urine' %}">Urine Test</a>
-                            <a class="dropdown-item" href="#">X-ray</a>
-                            <a class="dropdown-item" href="#">MRI</a>
-                        </div>
-                    </div>
-                    
-
-                </div>
-            </div>
+<!-- User Dropdown -->
+<div class="col-md-2 d-flex justify-content-end align-items-center">
+    <div class="dropdown">
+        <button class="btn btn-info dropdown-toggle" type="button" id="userDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Welcome, {{ user.first_name }}
+        </button>
+        <div class="dropdown-menu" aria-labelledby="userDropdown">
+            <a class="dropdown-item" href="{% url 'profile' %}" data-name="profile">Profile</a>
+            <a class="dropdown-item" href="#" data-name="settings">Settings</a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="{% url 'logout' %}" data-name="logout">Logout</a>
         </div>
-    </header>
+    </div>
+</div>
+
+<!-- Test Dropdown -->
+<div class="dropdown">
+    <div id="testDropdown" class="dropdown-toggle1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <h6>Select Test</h6>
+    </div>
+    <div class="dropdown-menu" aria-labelledby="testDropdown">
+        <a class="dropdown-item" href="{% url 'add_test_type' %}" data-name="book test">Book Test</a>
+        <a class="dropdown-item" href="{% url 'swab' %}" data-name="swab test">Swab Test</a>
+        <a class="dropdown-item" href="{% url 'urine' %}" data-name="urine test">Urine Test</a>
+        <a class="dropdown-item" href="#" data-name="x-ray">X-ray</a>
+        <a class="dropdown-item" href="#" data-name="mri">MRI</a>
+    </div>
+</div>
+
+<div class="chatbot-icon" onclick="redirectToChatbot()">
+    <i class="fas fa-comments"></i>
+</div>
+</header>
+<!-- Speech Button -->
+
+
+
+
+        
+        <script>
+            function redirectToChatbot() {
+                window.location.href = "{% url 'chatbot_view' %}";  // Redirect to the chatbot view
+            }
+        
+        </script>  
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const speechButton = document.getElementById("speechNavBtn");
+            
+                if ("webkitSpeechRecognition" in window) {
+                    const recognition = new webkitSpeechRecognition();
+                    recognition.continuous = false;
+                    recognition.interimResults = false;
+                    recognition.lang = "en-US"; 
+            
+                    speechButton.addEventListener("click", function () {
+                        recognition.start();
+                        speechButton.innerHTML = '<i class="fas fa-microphone-slash"></i> Listening...';
+                    });
+            
+                    recognition.onresult = function (event) {
+                        let transcript = event.results[0][0].transcript.toLowerCase().trim();
+                        console.log("Recognized Speech:", transcript);
+            
+                        // Get all navigation items with data-name attribute
+                        let navLinks = document.querySelectorAll("[data-name]");
+            
+                        // Check if transcript matches any data-name value
+                        let matchedLink = Array.from(navLinks).find(link => transcript.includes(link.getAttribute("data-name")));
+            
+                        if (matchedLink) {
+                            window.location.href = matchedLink.href;
+                        } else {
+                            alert("Command not recognized. Try saying: 'Home', 'Booking Details', 'Profile', 'Book Test', etc.");
+                        }
+                    };
+            
+                    recognition.onerror = function (event) {
+                        alert("Speech recognition error: " + event.error);
+                    };
+            
+                    recognition.onend = function () {
+                        speechButton.innerHTML = '<i class="fas fa-microphone"></i> Speak';
+                    };
+                } else {
+                    alert("Speech recognition is not supported in this browser. Please use Google Chrome.");
+                }
+            });
+            </script>
+        </header><br><br>
 
     <!-- ################# Page Header #######################--->
     <br><br><br>br><div class="page-header text-center mt-4">
@@ -174,9 +309,22 @@
                                 {% endif %}
                             </td>
                             <td>{{ booking.status }}</td> <!-- Displaying the status -->
-                            <td>   <a href="{% url 'view_test_results' booking.id %}">View Test Results</a></td>
+                            
+                                <!-- Display the booking status -->
+
+
+<!-- Conditionally show the button only if status is 'test done' -->
+<td>
+  {% if booking.status == 'test done' %}
+    <a href="{% url 'view_test_results' booking.id %}">View Test Results</a>
+  {% else %}
+    <span style="color: gray;">Results Not Available</span>
+  {% endif %}
+</td>
+
+                           
                             <td>
-                                {% if booking.status == 'scheduled' or booking.status == 'collected' %}
+                                {% if booking.status == 'scheduled' or booking.status == 'collected' or booking.status == 'Test Done' %}
                                     <a href="{% url 'generate_bill' booking.id %}" class="btn btn-primary">Download Bill</a>
                                 {% endif %}
                             </td>

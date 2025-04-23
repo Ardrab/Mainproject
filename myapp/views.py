@@ -9,115 +9,191 @@ from .forms import RegistrationForm  # Import your RegistrationForm here
 from .models import User
 from django.contrib.auth import get_user_model
 from django.urls import reverse
+from django.views.decorators.cache import never_cache
 
 from django.contrib.auth.decorators import login_required
+
+import cv2
+import numpy as np
+import base64
+from django.core.files.base import ContentFile
 
 def index_view(request):
     return render(request, 'index.html')
 
-from django.contrib.auth import authenticate, login as auth_login
+import base64
+import cv2
+import numpy as np
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from .models import LabTechnician
+from django.contrib.auth import authenticate, login
+from .models import User
+
+
 def login_view(request):
     if request.method == 'POST':
         email = request.POST.get('email')
         password = request.POST.get('password')
-        
-        # Authenticate user
-        user = authenticate(request, username=email, password=password)
-        
-        if user is not None:
-            auth_login(request, user)
-            print(f"User {user.email} authenticated successfully.")
-            
-            # Check if user is a lab technician and if their profile is completed
-            if user.role == 3:  # Lab Technician
-                if hasattr(user, 'lab_technicians'):
-                    lab_technician = user.lab_technicians.first()
-                    if lab_technician and lab_technician.profile_completed:
-                        print("Redirecting completed lab tech profile to labtechindex.")
-                        return redirect('labtechindex')
+        face_image = request.POST.get('face_image')
+
+        try:
+            # Get the user from the database based on the email
+            user = User.objects.get(email=email)
+
+            if face_image:  # If a face image is provided for login
+                try:
+                    # Convert base64 to image
+                    format, imgstr = face_image.split(';base64,')
+                    image_data = base64.b64decode(imgstr)
+                    
+                    # Convert to numpy array
+                    nparr = np.frombuffer(image_data, np.uint8)
+                    live_img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+                    
+                    # Convert live image to grayscale
+                    live_gray = cv2.cvtColor(live_img, cv2.COLOR_BGR2GRAY)
+                    
+                    # Detect faces in the live image
+                    face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+                    faces = face_cascade.detectMultiScale(live_gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+
+                    if len(faces) == 0:
+                        messages.error(request, 'No face detected. Please try again.')
+                        return render(request, 'login.html')
+
+                    if len(faces) > 1:
+                        messages.error(request, 'Multiple faces detected. Please ensure only your face is visible.')
+                        return render(request, 'login.html')
+
+                    # Extract the first face found (face ROI)
+                    (x, y, w, h) = faces[0]
+                    live_face = live_gray[y:y+h, x:x+w]
+                    live_face_resized = cv2.resize(live_face, (128, 128))
+
+                    # Check if the user has a registered face image
+                    if not user.face_image:
+                        messages.error(request, 'No face image registered for this user. Please use password login.')
+                        return render(request, 'login.html')
+
+                    # Load the stored face image
+                    stored_img = cv2.imread(user.face_image.path)
+                    stored_gray = cv2.cvtColor(stored_img, cv2.COLOR_BGR2GRAY)
+
+                    # Detect faces in the stored image
+                    stored_faces = face_cascade.detectMultiScale(stored_gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+
+                    if len(stored_faces) == 0:
+                        messages.error(request, 'Error with stored face image. Please use password login.')
+                        return render(request, 'login.html')
+
+                    # Extract the first face from stored image
+                    (sx, sy, sw, sh) = stored_faces[0]
+                    stored_face = stored_gray[sy:sy+sh, sx:sx+sw]
+                    stored_face_resized = cv2.resize(stored_face, (128, 128))
+
+                    # Compute similarity between live and stored faces
+                    similarity = cv2.matchTemplate(live_face_resized, stored_face_resized, cv2.TM_CCOEFF_NORMED)[0][0]
+
+                    if similarity > 0.3:  # Adjust threshold based on your needs
+                        user.backend = 'django.contrib.auth.backends.ModelBackend'
+                        login(request, user)
+                        messages.success(request, 'Face login successful!')
+                        return redirect('user_index')  # Redirect to user homepage after successful login
                     else:
-                        print("Redirecting incomplete lab tech profile to labtechprofile.")
-                        return redirect('labtechprofile')
-            
-            # Check if user is of role 2 and handle profile completion
-            elif user.role == 2:  # Role 2 user
-                if hasattr(user, 'profiles'):
-                    user_profile = user.profiles.first()
-                    if user_profile and user_profile.profile_completed:
-                        print("Redirecting user with role 2 to lab index.")
+                        messages.error(request, f'Face verification failed. Similarity: {similarity}. Please try again or use password login.')
+                        return render(request, 'login.html')
+
+                except Exception as e:
+                    print(f"Face detection error: {str(e)}")
+                    messages.error(request, 'Face detection failed. Please try again or use password login.')
+                    return render(request, 'login.html')
+
+            else:  # If no face image, authenticate with password
+                user = authenticate(request, username=email, password=password)
+                if user is not None:
+                    login(request, user)
+                    if user.is_superuser:
+                        return redirect('adminindex')
+                    elif user.role == 3:
+                        return redirect('labtechindex')
+                    elif user.role == 2:
                         return redirect('labindex')
                     else:
-                        print("Redirecting incomplete profile user with role 2 to labprofile.")
-                        return redirect('labprofile')
+                        return redirect('user_index')
+                else:
+                    messages.error(request, 'Invalid email or password')
 
-            # Check user role and redirect accordingly
-            if user.is_superuser:
-                print("Redirecting superuser to admin index.")
-                return redirect('adminindex')  # Redirect to the admin index page if superuser
-            elif hasattr(user, 'role'):
-                if user.role == 0:
-                    print("Redirecting user with role 0 to user index.")
-                    return redirect('user_index')  # Redirect to the user index page if role is 0
-            else:
-                print("Redirecting normal user to user index.")
-                return redirect('userindex')  # Redirect to the user index page if no specific role
-        else:
-            print("Invalid login credentials.")
-            error = 'Invalid email or password. Please try again.'
-            return render(request, 'login.html', {'error': error})
-    
+        except User.DoesNotExist:
+            messages.error(request, 'Invalid email or password')
+
+        except Exception as e:
+            print(f"Login error: {str(e)}")
+            messages.error(request, 'Login failed')
+
     return render(request, 'login.html')
+
 
 
 
 
 def register_view(request):
     if request.method == 'POST':
-        fname = request.POST.get('fname')
-        lname = request.POST.get('lname')
-        email = request.POST.get('email')
-        password = request.POST.get('password')
-        gender = request.POST.get('gender')
-        dob = request.POST.get('dob')
-        phone = request.POST.get('phone')
-        role = request.POST.get('role', 0)  # Default role to 0 if not provided
+        try:
+            # Get form data
+            fname = request.POST.get('fname')
+            lname = request.POST.get('lname')
+            email = request.POST.get('email')
+            password = request.POST.get('password')
+            gender = request.POST.get('gender')
+            dob = request.POST.get('dob')
+            phone = request.POST.get('phone')
+            role = request.POST.get('role', 0)
+            face_image = request.POST.get('face_image')
 
-        hashed_password = make_password(password)
+            # Create user
+            user = User(
+                first_name=fname,
+                last_name=lname,
+                username=email,
+                email=email,
+                password=make_password(password),
+                gender=gender,
+                dob=dob,
+                phone=phone,
+                role=role
+            )
 
-        user = User(
-            first_name=fname,
-            last_name=lname,
-            username=email,
-            email=email,
-            password=hashed_password,
-            gender=gender,
-            dob=dob,
-            phone=phone,
-            role=role
-        )
-        user.save()
+            # Process face image if provided
+            if face_image and face_image.startswith('data:image'):
+                format, imgstr = face_image.split(';base64,')
+                image_data = base64.b64decode(imgstr)
+                
+                # Save the image
+                user.face_image.save(f'face_{email}.jpg', ContentFile(image_data), save=False)
 
-        # Example: Store user_id in session after registration
-        request.session['user_id'] = user.id
+            user.save()
+            messages.success(request, 'Registration successful!')
+            return redirect('login')
 
-        return redirect('login')
-    else:
-        form = RegistrationForm()
+        except Exception as e:
+            print(f"Registration error: {str(e)}")
+            messages.error(request, f'Registration failed: {str(e)}')
+    
+    return render(request, 'register.html')
 
-    return render(request, 'register.html', {'form': form})
-
-
+@never_cache
+@login_required
 def user_index(request):
     return render(request, 'user/userindex.html')
+
+@never_cache
+@login_required
 def lab_index(request):
     return render(request, 'lab/labindex.html')
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from .models import Notification
-
+@never_cache
 @login_required
 def labtechindex(request):
     # Fetch notifications for the logged-in lab technician
@@ -141,21 +217,27 @@ def logout_view(request):
 
     # Redirect to the index page
     return redirect('index')
-
+@never_cache
+@login_required
 def medicalhistory_view(request):
     return render(request, 'user/medicalhistory.html')
+@never_cache
+@login_required
 def adminindex_view(request):
     return render(request, 'admins/adminindex.html') 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib import messages
 from .models import User
-
+@never_cache
+@login_required
 @user_passes_test(lambda u: u.is_superuser)  # Ensure only superusers can access this view
 def user_list_view(request):
     # Filter users with role=0 and is_staff=False
     users = User.objects.filter(role=0, is_staff=False)
     return render(request, 'admins/user_list.html', {'users': users})
+@never_cache
+@login_required
 @user_passes_test(lambda u: u.is_superuser)
 def toggle_user_status(request, user_id):
     user = get_object_or_404(User, id=user_id)
@@ -163,17 +245,24 @@ def toggle_user_status(request, user_id):
     user.save()
     messages.success(request, f"User {'activated' if user.is_active else 'deactivated'} successfully.")
     return redirect('user_list')
-
+@never_cache
+@login_required
 @user_passes_test(lambda u: u.is_superuser)
 def delete_user(request, user_id):
     user = get_object_or_404(User, id=user_id)
     user.delete()
     messages.success(request, "User deleted successfully.")
     return redirect('user_list')
+@never_cache
+@login_required
 def bloodtest_view(request):
     return render(request, 'user/blood.html')
+@never_cache
+@login_required
 def urinetest_view(request):
     return render(request, 'user/urine.html')
+@never_cache
+@login_required
 def swabtest_view(request):
     return render(request, 'user/swab.html')
 import secrets
@@ -184,7 +273,8 @@ from django.contrib import messages
 from django.core.mail import send_mail
 from django.shortcuts import render, redirect
 from django.conf import settings
-
+@never_cache
+@login_required
 def generate_random_password(length=12):
     characters = string.ascii_letters + string.digits + string.punctuation
     password = ''.join(secrets.choice(characters) for i in range(length))
@@ -209,7 +299,8 @@ from django.contrib.auth.hashers import make_password
 import logging
 
 logger = logging.getLogger(__name__)
-
+@never_cache
+@login_required
 def addlab_view(request):
     if request.method == 'POST':
         first_name = request.POST.get('first_name')
@@ -255,11 +346,30 @@ def addlab_view(request):
 
 
 
-
 import time
 import sqlite3
+import string
+import random
+from django.conf import settings
+from django.contrib import messages
+from django.contrib.auth import get_user_model
+from django.contrib.auth.hashers import make_password
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.cache import never_cache
+from django.core.mail import send_mail
 from django.db import transaction
+from django.shortcuts import render, redirect
+import logging
 
+logger = logging.getLogger(__name__)
+
+# ✅ Password generator function without 'request'
+def generate_random_password(length=10):
+    characters = string.ascii_letters + string.digits + "!@#$%^&*()"
+    return ''.join(random.SystemRandom().choice(characters) for _ in range(length))
+
+@never_cache
+@login_required
 def addlabtech_view(request):
     if request.method == 'POST':
         first_name = request.POST.get('first_name')
@@ -272,7 +382,7 @@ def addlabtech_view(request):
             messages.error(request, "Username (email) already exists.")
             return render(request, 'lab/addlabtech.html')
 
-        # Generate a random password
+        # ✅ Generate a secure random password
         random_password = generate_random_password()
 
         retries = 5
@@ -288,7 +398,6 @@ def addlabtech_view(request):
                         role=role,
                         password=make_password(random_password)
                     )
-                    # Save the user
                     user.save()
                 break
             except sqlite3.OperationalError as e:
@@ -302,7 +411,7 @@ def addlabtech_view(request):
             messages.error(request, "Failed to add user due to a database lock.")
             return render(request, 'lab/addlabtech.html')
 
-        # Send email with the autogenerated password
+        # ✅ Send autogenerated password via email
         subject = 'Your Account Details for MEDLAB'
         message = f'Hello {first_name},\n\nYour account has been created successfully. Here are your login details:\n\nEmail: {email}\nPassword: {random_password}\n\nPlease change your password after logging in.\n\nBest regards,\nMEDLAB Team'
         from_email = settings.EMAIL_HOST_USER
@@ -319,6 +428,7 @@ def addlabtech_view(request):
 
     return render(request, 'lab/addlabtech.html')
 
+
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
@@ -326,6 +436,7 @@ from django.contrib.auth.hashers import make_password
 
 User = get_user_model()
 
+@never_cache
 @login_required
 def profile_view(request):
     return render(request, 'user/profile_view.html')
@@ -336,6 +447,7 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
+@never_cache
 @login_required
 def edit_profile_view(request):
     user = request.user
@@ -366,7 +478,8 @@ def edit_profile_view(request):
     return render(request, 'user/edit_profile.html', {'user': user})
 from django.shortcuts import render
 from .models import User, UserProfile  # Adjust the import based on your project structure
-
+@never_cache
+@login_required
 def labtech_list_view(request):
     # Filter users by role=2 and prefetch related UserProfile data
     users = User.objects.filter(role=2).prefetch_related('profiles')
@@ -393,6 +506,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import update_session_auth_hash
 from django.contrib import messages
 
+@never_cache
 @login_required
 def labprofile_view(request):
     if request.method == 'POST':
@@ -455,6 +569,7 @@ from django.contrib.auth import get_user_model
 from .models import LabTechnician
 from .forms import LabTechnicianForm
 
+@never_cache
 @login_required
 def labtechprofile_view(request):
     user = request.user
@@ -506,10 +621,11 @@ def labtechprofile_view(request):
             form = LabTechnicianForm()
 
     return render(request, 'labtech/labtechprofile.html', {'form': form})
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import LabTechnician
 
+@never_cache
 @login_required
 def labtech_view(request):
     # Get the currently logged-in user's lab technician profile
@@ -522,7 +638,8 @@ def labtech_view(request):
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from .models import TestName, UserProfile  # Ensure your models are imported
-
+@never_cache
+@login_required
 def addtest_view(request):
     if request.method == 'POST':
         test_name = request.POST.get('test_name')
@@ -544,7 +661,8 @@ def addtest_view(request):
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from .models import TestName, Tests
-
+@never_cache
+@login_required
 def addtestname_view(request):
     if request.method == 'POST':
         test_type_names = request.POST.get('test_type_names')
@@ -577,7 +695,8 @@ from .models import TestType, Tests
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from .models import TestType, Tests, Amount  # Ensure Amount is imported
-
+@never_cache
+@login_required
 def add_test_types(request):
     if request.method == 'POST':
         test_id = request.POST.get('test_id')
@@ -620,7 +739,8 @@ from django.http import HttpResponse
 from django.urls import reverse
 
 User = get_user_model()
-
+@never_cache
+@login_required
 def password_reset_confirm(request, uidb64, token):
     try:
         # Decode the uidb64 and get the user
@@ -673,7 +793,8 @@ from django.http import HttpResponse
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
-
+@never_cache
+@login_required
 def password_reset_request(request):
     if request.method == 'POST':
         email = request.POST.get('email')
@@ -712,7 +833,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from .models import TestName, Tests, TestType
 from django.views.decorators.csrf import csrf_exempt
-
+@never_cache
+@login_required
 # View to render the form
 def add_test_type_view(request):
     test_names = TestName.objects.all()
@@ -737,6 +859,7 @@ from django.contrib import messages
 from .models import TestName, TestType, Booking
 from datetime import datetime
 
+@never_cache
 @login_required
 def add_test_type(request):
     if request.method == 'POST':
@@ -845,7 +968,8 @@ def update_booking_status(request, booking_id, new_status):
 
 from django.shortcuts import render, get_object_or_404
 from .models import Booking, TestType
-
+@never_cache
+@login_required
 def booking_list_view(request):
     bookings = Booking.objects.all()
     return render(request, 'lab/booking_detail.html', {'bookings': bookings})
@@ -855,7 +979,8 @@ from .models import Booking, Payment  # Ensure Payment is imported
 # myproject/myapp/views.py
 from django.shortcuts import render, get_object_or_404
 from .models import Booking, Payment, CollectionStatus  # Ensure CollectionStatus is imported
-
+@never_cache
+@login_required
 def view_booking_details(request, booking_id):
     # Fetch the booking instance
     booking = get_object_or_404(Booking, pk=booking_id)
@@ -882,7 +1007,8 @@ def view_booking_details(request, booking_id):
     return render(request, 'lab/view_booking_details.html', context)
 from django.shortcuts import get_object_or_404
 
-
+@never_cache
+@login_required
 def user_details_view(request, user_id):
     user = get_object_or_404(User, id=user_id)
     return render(request, 'lab/user_details.html', {'user': user})
@@ -902,6 +1028,7 @@ from django.http import HttpResponseBadRequest
 
 # Initialize Razorpay client
 razorpay_client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+
 
 @login_required
 def payment_view(request, booking_id):
@@ -936,7 +1063,7 @@ def payment_view(request, booking_id):
         return redirect('user_index')
 
 
-@login_required
+
 def process_payment(request, booking_id):
     if request.method == 'POST':
         # Get Razorpay payment details from the form
@@ -993,7 +1120,7 @@ def process_payment(request, booking_id):
 
 
 
-@login_required
+
 def verify_payment(request):
     if request.method == 'POST':
         data = json.loads(request.body)
@@ -1028,7 +1155,8 @@ def verify_payment(request):
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import LabTechnicianSchedule, LabTechnician, Booking, Notification
 from .forms import LabTechnicianScheduleForm
-
+@never_cache
+@login_required
 def schedule_lab_technician_view(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id)
     
@@ -1091,19 +1219,91 @@ def get_technicians(request):
 from django.shortcuts import render, get_object_or_404
 from .models import LabTechnicianSchedule, CollectionStatus, LabTechnician, Booking, Notification  # Ensure Notification is imported
 
+from django.shortcuts import render, get_object_or_404
+from .models import LabTechnicianSchedule, CollectionStatus, LabTechnician, Booking, Notification  # Ensure all models are imported
+
+from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.cache import never_cache
+from .models import LabTechnicianSchedule, CollectionStatus, LabTechnician, Booking, Notification
+
+# @never_cache
+# @login_required
+# def view_scheduled_requests(request):
+#     technician = get_object_or_404(LabTechnician, user=request.user)
+#     scheduled_requests = LabTechnicianSchedule.objects.filter(technician=technician)
+
+#     detailed_requests = []
+#     for schedule in scheduled_requests:
+#         booking = schedule.booking
+#         test_types = booking.test_types.all()
+
+#         test_type_names = ", ".join([test_type.tests_names for test_type in test_types]) if test_types else "No test types available"
+
+#         # Get or create the collection status
+#         collection_status, created = CollectionStatus.objects.get_or_create(booking=booking)
+
+#         # Determine type of booking and fetch location if it's home collection
+#         if booking.home_collection and booking.home_collection.location:
+#             type_of_booking = 'Home Collection'
+#             location = booking.home_collection.location  # Fetch location from home_collection table
+#         else:
+#             type_of_booking = 'Lab Visit'
+#             location = None  # No location for Lab Visit
+
+#         detailed_requests.append({
+#             'appointment_date': booking.appointment_date,
+#             'appointment_time': booking.appointment_time,
+#             'user_name': f"{booking.user.first_name} {booking.user.last_name}",
+#             'test_types': test_type_names,
+#             'booking_id': booking.id,
+#             'is_collected': collection_status.is_collected,  # Collection status
+#             'technician_id': collection_status.technician.labtech_id if collection_status.technician else None,
+#             'type_of_booking': type_of_booking,  # Booking type
+#             'location': location,  # Store location for home collection
+#         })
+
+#     # Calculate the count of unread notifications for the current lab technician
+#     unviewed_count = Notification.objects.filter(is_read=False, lab_technician=technician).count()
+
+#     return render(request, 'labtech/view_scheduled_request.html', {
+#         'scheduled_requests': detailed_requests,
+#         'unviewed_count': unviewed_count,
+#     })
+
+ # Redirect back to the scheduled requests view  # Ensure you have the correct imports
+# myproject/myapp/views.py
+from django.views.decorators.cache import never_cache
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, get_object_or_404
+from .models import LabTechnician, LabTechnicianSchedule, CollectionStatus, Notification
+
+@never_cache
+@login_required
 def view_scheduled_requests(request):
     technician = get_object_or_404(LabTechnician, user=request.user)
     scheduled_requests = LabTechnicianSchedule.objects.filter(technician=technician)
+
+    # Get search and sort parameters from the request
+    search_booking_id = request.GET.get('search_booking_id', '').strip()
+    sort_by = request.GET.get('sort_by', '')
 
     detailed_requests = []
     for schedule in scheduled_requests:
         booking = schedule.booking
         test_types = booking.test_types.all()
-
         test_type_names = ", ".join([test_type.tests_names for test_type in test_types]) if test_types else "No test types available"
 
-        # Get or create the collection status
-        collection_status, created = CollectionStatus.objects.get_or_create(booking=booking)
+        # Collection status
+        collection_status, _ = CollectionStatus.objects.get_or_create(booking=booking)
+
+        # Booking type and location
+        if booking.home_collection and booking.home_collection.location:
+            type_of_booking = 'Home Collection'
+            location = booking.home_collection.location
+        else:
+            type_of_booking = 'Lab Visit'
+            location = None
 
         detailed_requests.append({
             'appointment_date': booking.appointment_date,
@@ -1111,19 +1311,33 @@ def view_scheduled_requests(request):
             'user_name': f"{booking.user.first_name} {booking.user.last_name}",
             'test_types': test_type_names,
             'booking_id': booking.id,
-            'is_collected': collection_status.is_collected,  # Include collection status
-            'technician_id': collection_status.technician.labtech_id if collection_status.technician else None,  # Use labtech_id
+            'status': booking.status,
+            'is_collected': collection_status.is_collected,
+            'technician_id': collection_status.technician.labtech_id if collection_status.technician else None,
+            'type_of_booking': type_of_booking,
+            'location': location,
         })
 
-    # Calculate the count of unread notifications for the current lab technician
+    # Apply search filter
+    if search_booking_id:
+        detailed_requests = [req for req in detailed_requests if search_booking_id.lower() in str(req['booking_id']).lower()]
+
+    # Apply sorting
+    if sort_by == 'asc':
+        detailed_requests.sort(key=lambda x: x['appointment_date'])
+    elif sort_by == 'desc':
+        detailed_requests.sort(key=lambda x: x['appointment_date'], reverse=True)
+
+    # Unread notifications
     unviewed_count = Notification.objects.filter(is_read=False, lab_technician=technician).count()
 
     return render(request, 'labtech/view_scheduled_request.html', {
         'scheduled_requests': detailed_requests,
-        'unviewed_count': unviewed_count,  # Pass the count to the template
+        'unviewed_count': unviewed_count,
+        'request': request  # So we can access GET params in the template
     })
- # Redirect back to the scheduled requests view  # Ensure you have the correct imports
-# myproject/myapp/views.py
+
+
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import LabTechnicianSchedule, CollectionStatus, LabTechnician
 from django.views.decorators.cache import never_cache
@@ -1166,26 +1380,62 @@ def view_notifications(request):
     })
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from .models import LabTechnician, LabTechnicianSchedule
+from .models import LabTechnician, LabTechnicianSchedule, Booking
+from django.utils import timezone
+from django.db.models import Max
 
+@never_cache
 @login_required
 def unscheduled_lab_technicians(request):
+    # Get today's date
+    today = timezone.now().date()
+
+    # Get all bookings that are scheduled before today
+    past_bookings = Booking.objects.filter(appointment_date__lt=today)
+
+    # Get the technicians associated with those bookings
+    technicians_with_past_bookings = LabTechnicianSchedule.objects.filter(booking__in=past_bookings).values_list('technician', flat=True)
+
+    # Retrieve the technician objects with past bookings
+    technicians_with_past = LabTechnician.objects.filter(labtech_id__in=technicians_with_past_bookings)
+
+    # Get the last appointment date for each technician with past bookings
+    last_appointment_dates = LabTechnicianSchedule.objects.filter(technician__in=technicians_with_past).annotate(last_appointment=Max('booking__appointment_date'))
+
+    # Create a dictionary to map technician IDs to their last appointment dates
+    last_appointment_dict = {tech.technician.labtech_id: tech.last_appointment for tech in last_appointment_dates}
+
     # Get all lab technicians
     all_technicians = LabTechnician.objects.all()
-    
+
     # Get scheduled technicians
     scheduled_technicians = LabTechnicianSchedule.objects.values_list('technician', flat=True)
-    
-    # Filter out scheduled technicians
+
+    # Filter out scheduled technicians to find unscheduled ones
     unscheduled_technicians = all_technicians.exclude(labtech_id__in=scheduled_technicians)
 
+    # Combine both lists
+    combined_technicians = []
+    for technician in technicians_with_past:
+        combined_technicians.append({
+            'technician': technician,
+            'last_appointment': last_appointment_dict.get(technician.labtech_id, None)  # Use labtech_id
+        })
+
+    for technician in unscheduled_technicians:
+        combined_technicians.append({
+            'technician': technician,
+            'last_appointment': None  # No appointment date for unscheduled technicians
+        })
+
     return render(request, 'lab/unscheduled_lab_technicians.html', {
-        'unscheduled_technicians': unscheduled_technicians,
+        'technicians': combined_technicians,
+        'today': today,
     })
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from .models import Booking  # Ensure you have the correct import
-
+@never_cache
 @login_required
 def user_bookings(request):
     # Fetch all bookings for the logged-in user, prefetching related test types
@@ -1201,9 +1451,8 @@ def user_bookings(request):
 # myproject/myapp/views.py
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Booking, CollectionStatus, TestResult, TestValue, Notification, LabTechnician, TestType  # Ensure all models are imported
-
 @never_cache
-@never_cache
+@login_required
 def create_test_result(request, booking_id):
     booking = get_object_or_404(Booking, pk=booking_id)
     collection_status = get_object_or_404(CollectionStatus, booking=booking)
@@ -1245,7 +1494,8 @@ def create_test_result(request, booking_id):
 
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Booking, CollectionStatus, TestResult
-
+@never_cache
+@login_required
 def view_test_results(request, booking_id):
     booking = get_object_or_404(Booking, pk=booking_id)
 
@@ -1287,135 +1537,155 @@ def view_test_results(request, booking_id):
 
 # myproject/myapp/views.py
 from django.shortcuts import render, get_object_or_404
-from .models import Booking, CollectionStatus, TestResult, TestValue, Notification, LabTechnician, TestType  # Ensure all models are imported
-
-# def view_test_results(request, booking_id):
-#     booking = get_object_or_404(Booking, pk=booking_id)
-#     collection_status = get_object_or_404(CollectionStatus, booking=booking)
-
-#     # Fetch test results associated with the collection status
-#     test_results = TestResult.objects.filter(collection_status=collection_status).prefetch_related('values')
-
-    
-
-#     # Calculate the count of unread notifications for the current lab technicianunviewed_count = Notification.objects.filter(is_read=False, lab_technician=lab_technician).count()
-
-#     # Fetch the test types associated with the booking
-#     test_types = booking.test_types.all()
-
-#     return render(request, 'user/view_test_results.html', {
-#         'booking': booking,
-#         'test_results': test_results,  # Pass the test results to the template
-#         'test_types': test_types,  # Pass the test types to the template
-#           # Pass the count to the template
-#     })
-# myproject/myapp/views.py
-# myproject/myapp/views.py
-# myproject/myapp/views.py
-from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
 from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak
+from reportlab.lib.units import inch
+from .models import Booking, CollectionStatus, TestResult, TestValue, LabTechnician, TestType,Amount
+
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib import colors
+from reportlab.lib.units import inch
+from io import BytesIO
+
+from .models import Booking, CollectionStatus, TestResult, TestType, Amount
+
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
+from reportlab.lib.pagesizes import letter
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
 from reportlab.lib.units import inch
-from .models import Booking, CollectionStatus, TestResult, TestValue, LabTechnician
+from io import BytesIO
+from .models import Booking, CollectionStatus, TestResult, TestType, Amount
 
 def download_test_report_by_booking(request, booking_id):
     booking = get_object_or_404(Booking, pk=booking_id)
     collection_status = get_object_or_404(CollectionStatus, booking=booking)
-    
-    # Fetch the lab technician using the correct field "technician" in CollectionStatus
     lab_technician = collection_status.technician
 
-    # Create a PDF response
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="test_report_booking_{booking_id}.pdf"'
+    testing_date = "2023-01-15"
+    collection_date = "2023-01-20"
+    doctor_name = "Dr. John Doe"
+    report_done_by = "Lab Technician: Jane Smith"
+    report_id = f"{booking.id:03d}/medlab"
 
-    # Create a PDF document with ReportLab's SimpleDocTemplate
-    buffer = response
-    pdf = SimpleDocTemplate(buffer, pagesize=letter)
+    buffer = BytesIO()
+    pdf = SimpleDocTemplate(buffer, pagesize=letter, rightMargin=50, leftMargin=50, topMargin=50, bottomMargin=36)
 
-    # Styles for the PDF
     styles = getSampleStyleSheet()
-
-    # Custom styles for lab name and titles
-    large_bold_style = ParagraphStyle(
-        name='LargeBold',
-        fontSize=18,
-        leading=22,
-        fontName='Helvetica-Bold',
-        alignment=1,  # Center alignment
-    )
-    normal_bold_style = ParagraphStyle(
-        name='NormalBold',
-        fontSize=12,
-        fontName='Helvetica-Bold',
-        alignment=0,  # Left alignment
-    )
+    title_style = ParagraphStyle(name='TitleStyle', fontSize=24, fontName='Helvetica-Bold', alignment=1, textColor=colors.darkblue, spaceAfter=14)
+    subtitle_style = ParagraphStyle(name='SubtitleStyle', fontSize=12, fontName='Helvetica-Bold', alignment=1, spaceAfter=8)
+    header_style = styles['Heading2']
+    normal_style = styles['Normal']
+    normal_style.fontSize = 11
+    normal_style.leading = 14
+    bold_style = ParagraphStyle(name='BoldStyle', fontName='Helvetica-Bold', fontSize=11)
 
     elements = []
 
-    # Lab name and booking details in bold and large font
-    elements.append(Paragraph("MedLab Diagnostic Center", large_bold_style))
-    elements.append(Spacer(1, 0.2 * inch))  # Spacer to add space between elements
-    elements.append(Paragraph(f"Test Report for Booking ID: {booking_id}", normal_bold_style))
-    elements.append(Paragraph(f"Patient: {booking.user.first_name} {booking.user.last_name}", styles['Normal']))
-    elements.append(Paragraph(f"Date of Appointment: {booking.appointment_date}", styles['Normal']))
-    
-    if lab_technician:
-        elements.append(Paragraph(f"Test conducted by: {lab_technician.user.first_name} {lab_technician.user.last_name}", styles['Normal']))
-    else:
-        elements.append(Paragraph("Test conducted by: N/A", styles['Normal']))
-    
-    elements.append(Spacer(1, 0.3 * inch))  # Add more space before showing test results
+    # Report Header
+    elements.append(Paragraph("MedLab Diagnostic Center", title_style))
+    elements.append(Paragraph("123 Health Street, City, Country", subtitle_style))
+    elements.append(Paragraph("Phone: +1 234 567 890 | Email: contact@medlab.com", subtitle_style))
+    elements.append(Spacer(1, 0.2 * inch))
+    elements.append(Paragraph(f"<b>Test Report ID:</b> {report_id}", normal_style))
+    elements.append(Spacer(1, 0.2 * inch))
 
-    # Fetch test results associated with the collection status
+    # Patient & Booking Info
+    elements.append(Paragraph(f"<b>Patient:</b> {booking.user.first_name} {booking.user.last_name}", normal_style))
+    elements.append(Paragraph(f"<b>Date of Appointment:</b> {booking.appointment_date}", normal_style))
+    elements.append(Paragraph(f"<b>Testing Date:</b> {testing_date}", normal_style))
+    elements.append(Paragraph(f"<b>Collection Date:</b> {collection_date}", normal_style))
+    elements.append(Paragraph(f"<b>Doctor:</b> {doctor_name}", normal_style))
+    elements.append(Spacer(1, 0.3 * inch))
+
+    # Technician Info
+    elements.append(Paragraph("<b>Test Conducted By:</b>", header_style))
+    elements.append(Paragraph(f"{lab_technician.user.first_name} {lab_technician.user.last_name}", normal_style))
+    elements.append(Spacer(1, 0.2 * inch))
+    elements.append(Paragraph("<b>Report Done By:</b>", header_style))
+    elements.append(Paragraph(report_done_by, normal_style))
+    elements.append(Spacer(1, 0.3 * inch))
+
+    # Test Results Table
+    table_data = [
+        [Paragraph("<b>Test Name</b>", bold_style), Paragraph("<b>Result</b>", bold_style), Paragraph("<b>Normal Range</b>", bold_style)]
+    ]
+
     test_results = TestResult.objects.filter(collection_status=collection_status).prefetch_related('values', 'test_types')
+    total_amount = 0
 
-    # Create a table with headers
-    table_data = [["Test Name", "Result"]]  # Two columns: Test Name and Result
-
-    # Loop through each test result and split result values by commas into separate rows
     for result in test_results:
-        test_types = result.test_types.all()  # Get all test types related to this result
-        result_values = result.values.all()  # Get all result values related to this result
+        test_types = result.test_types.all()
+        result_values = result.values.all()
 
-        # Process each test type and corresponding result values
         for test_type, value in zip(test_types, result_values):
-            # Split the result value by commas and create a row for each result
-            split_values = value.result_value.split(",")  # Split result value by commas
+            normal_range = get_object_or_404(TestType, testtype_id=test_type.testtype_id).normal_range
+            split_values = value.result_value.split(",")
+
+            try:
+                amount_obj = Amount.objects.get(test_type=test_type)
+                price = amount_obj.amount
+            except Amount.DoesNotExist:
+                price = 0
+
             for single_value in split_values:
-                row = [test_type.tests_names, single_value]  # Each result in a new row under the test name
-                table_data.append(row)
+                table_data.append([
+                    Paragraph(test_type.tests_names, normal_style),
+                    Paragraph(single_value.strip(), normal_style),
+                    Paragraph(normal_range, normal_style)
+                ])
+                total_amount += float(price)
 
-        # Handle cases where the number of test types and result values do not match
-        for test_type in test_types[len(result_values):]:
-            table_data.append([test_type.tests_names, "N/A"])
+    # Total Row
+    table_data.append([
+        "",
+        Paragraph("<b>Total Amount:</b>", bold_style),
+        Paragraph(f"<b>INR {total_amount:.2f}</b>", bold_style)
+    ])
 
-        for value in result_values[len(test_types):]:
-            table_data.append(["N/A", value.result_value])
-
-    # Create the table with separated test names and result values into different rows
-    table = Table(table_data)
+    # Build Table
+    table = Table(table_data, colWidths=[2.5 * inch, 2 * inch, 2 * inch])
     table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+        ('BACKGROUND', (0, 0), (-1, 0), colors.darkblue),
         ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
         ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
         ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
         ('FONTSIZE', (0, 0), (-1, 0), 12),
-        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
-        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 10),
+        ('BACKGROUND', (0, 1), (-1, -2), colors.beige),
+        ('GRID', (0, 0), (-1, -1), 0.5, colors.black),
+        ('ROWBACKGROUNDS', (0, 1), (-1, -2), [colors.whitesmoke, colors.lightgrey]),
+        ('BACKGROUND', (0, -1), (-1, -1), colors.lightgrey),
+        ('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, -1), (-1, -1), 11),
     ]))
 
     elements.append(table)
+    elements.append(Spacer(1, 0.5 * inch))
+    elements.append(Paragraph("<b>Thank you for choosing MedLab!</b>", normal_style))
+    elements.append(Paragraph("For any inquiries, please contact us at: contact@medlab.com or +1 234 567 890.", normal_style))
 
-    # Build the PDF
     pdf.build(elements)
 
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="test_report_booking_{report_id}.pdf"'
+    response.write(buffer.getvalue())
+    buffer.close()
+
     return response
+
+
+
+
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 from django.template.loader import get_template
@@ -1472,4 +1742,141 @@ def generate_bill(request, booking_id):
     except Payment.DoesNotExist:
         messages.error(request, 'Payment not found.')
         return redirect('user_index')
+
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from .models import TestName, TestType, Booking
+from datetime import datetime
+
+
+from datetime import datetime
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.cache import never_cache
+from .models import TestName, TestType, Booking, HomeCollection
+
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.utils.timezone import make_aware
+from .models import HomeCollection, Booking, TestName, TestType
+from datetime import datetime
+
+from django.utils.timezone import make_aware
+from datetime import datetime
+from django.contrib import messages
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.cache import never_cache
+from .models import Booking, TestName, TestType, HomeCollection
+
+@never_cache
+@login_required
+def home_collection(request):
+    if request.method == 'POST':
+        test_name_id = request.POST.get('name_id')
+        selected_test_types = request.POST.getlist('selected_test_types')
+        appointment_date = request.POST.get('appointment_date')
+        appointment_time = request.POST.get('appointment_time')
+        location = request.POST.get('location', '').strip()  # Ensure location is a valid string
+
+        print(f"Received location: {location}")  # Debugging
+
+        # Validate input
+        errors = []
+        if not test_name_id:
+            errors.append('Please select a Test Name.')
+        if not selected_test_types:
+            errors.append('Please select at least one Test Type.')
+        if not appointment_date:
+            errors.append('Please select an Appointment Date.')
+        if not appointment_time:
+            errors.append('Please select an Appointment Time.')
+
+        if errors:
+            for error in errors:
+                messages.error(request, error)
+            return render(request, 'user/home_collection.html', {
+                'test_names': TestName.objects.all(),
+                'tests': TestType.objects.all(),
+                'error': 'Please correct the following errors.'
+            })
+
+        # Process TestName
+        try:
+            test_name = TestName.objects.get(pk=test_name_id)
+        except TestName.DoesNotExist:
+            messages.error(request, 'Test Name not found.')
+            return redirect('home_collection')
+
+        # Convert date and time
+        try:
+            appointment_datetime = datetime.combine(
+                datetime.strptime(appointment_date, '%Y-%m-%d').date(),
+                datetime.strptime(appointment_time, '%I:%M %p').time()  # Fix: 12-hour format with AM/PM
+            )
+            appointment_datetime = make_aware(appointment_datetime)  # Convert to timezone-aware datetime
+        except ValueError as e:
+            messages.error(request, f"Invalid date or time format: {str(e)}")
+            return redirect('home_collection')
+
+        # Check for existing booking at the same time
+        if Booking.objects.filter(
+            appointment_date=appointment_datetime.date(),
+            appointment_time=appointment_datetime.time()
+        ).exists():
+            messages.error(request, 'This time slot is already booked.')
+            return render(request, 'user/home_collection.html', {
+                'test_names': TestName.objects.all(),
+                'tests': TestType.objects.all(),
+                'error': 'The selected time slot is unavailable.'
+            })
+
+        # Ensure HomeCollection entry is created if location is provided
+        home_collection_entry = None
+        if location:
+            home_collection_entry, created = HomeCollection.objects.get_or_create(location=location)
+            print(f"HomeCollection Created: {created}, ID: {home_collection_entry.id}")  # Debugging
+
+        # Create Booking instance and assign HomeCollection
+        booking = Booking(
+            user=request.user,
+            appointment_date=appointment_datetime.date(),
+            appointment_time=appointment_datetime.time(),
+            status='pending',
+            test=test_name,
+            home_collection=home_collection_entry  # Ensure this is assigned correctly
+        )
+        booking.save()
+
+        # Assign TestTypes
+        valid_test_types = TestType.objects.filter(testtype_id__in=selected_test_types)
+        booking.test_types.set(valid_test_types)
+
+        messages.success(request, 'Appointment booked successfully.')
+        return redirect('payment', booking_id=booking.id)
+
+    else:
+        context = {
+            'test_names': TestName.objects.all(),
+            'tests': TestType.objects.all(),
+        }
+        return render(request, 'user/home_collection.html', context)
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.cache import never_cache
+from django.shortcuts import get_object_or_404, redirect
+from .models import Booking, CollectionStatus, LabTechnician
+
+@never_cache
+@login_required
+def mark_test_done(request, booking_id):
+    # Get the booking object
+    booking = get_object_or_404(Booking, id=booking_id)
+    
+    # Update status to "Test Done"
+    booking.status = "test done"
+    booking.save()
+    
+    return redirect('view_scheduled_requests')  # Redirect back to the scheduled requests view
 

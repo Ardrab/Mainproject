@@ -74,7 +74,7 @@ try:
     test_type_names_input = WebDriverWait(driver, 10).until(
         EC.visibility_of_element_located((By.ID, 'tests_names'))
     )
-    test_type_names_input.send_keys('Wbc')
+    test_type_names_input.send_keys('platlets')
 
     # Step 10: Fill out the Normal Range input
     normal_range_input = WebDriverWait(driver, 10).until(

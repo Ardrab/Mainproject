@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-1ttcjj65r-h$%l=)xru!k*ssh@x=y%x^@+t-jfu-+fzh&+u85t
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['medlab-v11i.onrender.com','localhost','127.0.0.1']
+ALLOWED_HOSTS = []
 
 # settings.py
 
@@ -54,7 +54,6 @@ INSTALLED_APPS = [
 SITE_ID=2
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -63,8 +62,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
 ]
-
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 ROOT_URLCONF = 'myproject.urls'
 
@@ -144,8 +141,6 @@ STATIC_URL = '/static/'
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
     # Add more directories if necessary
@@ -203,6 +198,7 @@ USE_TZ = True
 
 # Media files settings
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # Ensure this directory exists
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 RAZORPAY_KEY_ID = 'rzp_test_ulk1JHPmrok29J'
 RAZORPAY_KEY_SECRET = 'HT1frOR0Er3mz0YsKqmrcR7c'
+CSRF_TRUSTED_ORIGINS = ['https://yourdomain.com', 'https://razorpay.com']
